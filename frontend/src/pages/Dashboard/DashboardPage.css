@@ -1,0 +1,70 @@
+.dashboard-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 22px;
+}
+
+.dashboard-main-grid {
+  grid-template-columns: minmax(0, 1fr)
+}
+
+
+
+.stat-card {
+  display: grid;
+  gap: 10px;
+  min-height: 160px;
+}
+
+.stat-card span,
+.mini-stat span {
+  color: var(--muted);
+}
+
+.stat-card strong,
+.mini-stat strong {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.accent-debt {
+  border-top: 5px solid #ff8b8b;
+}
+
+.accent-lent {
+  border-top: 5px solid #73d9b3;
+}
+
+.accent-assets {
+  border-top: 5px solid #7db6ff;
+}
+
+.accent-total {
+  border-top: 5px solid var(--accent);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+
+
+@media (max-width: 1180px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-main-grid,
+  .dashboard-hero-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

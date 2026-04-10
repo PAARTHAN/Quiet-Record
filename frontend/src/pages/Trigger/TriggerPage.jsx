@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import SectionHeader from "../components/SectionHeader";
-import { apiFetch } from "../api";
-import { formatServerDate } from "../storage";
+import SectionHeader from "../../components/SectionHeader/SectionHeader";
+import { apiFetch } from "../../api";
+import { formatServerDate } from "../../storage";
+import "./TriggerPage.css";
 
 export default function TriggerPage({ user, setUser, records, contacts, triggerStatus }) {
   const [messages, setMessages] = useState({ checkIn: "", trigger: "", warning: "" });

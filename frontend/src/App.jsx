@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import Layout from "./components/Layout";
-import AuthPage from "./pages/AuthPage";
-import DashboardPage from "./pages/DashboardPage";
-import RecordsPage from "./pages/RecordsPage";
-import ContactsPage from "./pages/ContactsPage";
-import TriggerPage from "./pages/TriggerPage";
-import ProfilePage from "./pages/ProfilePage";
+import Layout from "./components/Layout/Layout";
+import AuthPage from "./pages/Auth/AuthPage";
+import DashboardPage from "./pages/Dashboard/DashboardPage";
+import RecordsPage from "./pages/Records/RecordsPage";
+import ContactsPage from "./pages/Contacts/ContactsPage";
+import TriggerPage from "./pages/Trigger/TriggerPage";
+import ProfilePage from "./pages/Profile/ProfilePage";
 import { apiFetch } from "./api";
 import { getStoredUser, setStoredUser } from "./storage";
 

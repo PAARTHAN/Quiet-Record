@@ -1,6 +1,7 @@
 import { useState } from "react";
-import SectionHeader from "../components/SectionHeader";
-import { apiFetch } from "../api";
+import SectionHeader from "../../components/SectionHeader/SectionHeader";
+import { apiFetch } from "../../api";
+import "./ContactsPage.css";
 
 const emptyContact = { name: "", email: "", phone: "", relationship: "" };
 

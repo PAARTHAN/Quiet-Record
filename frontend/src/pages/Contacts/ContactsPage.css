@@ -1,0 +1,15 @@
+.contacts-grid {
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 1180px) {
+  .contacts-grid {
+    grid-template-columns: 1fr;
+  }
+}

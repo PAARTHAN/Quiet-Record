@@ -1,5 +1,6 @@
-import SectionHeader from "../components/SectionHeader";
-import { calculateBuckets, currencyTotal, formatCurrency, formatServerDate, getDashboardInsights } from "../storage";
+import SectionHeader from "../../components/SectionHeader/SectionHeader";
+import { calculateBuckets, currencyTotal, formatCurrency, formatServerDate, getDashboardInsights } from "../../storage";
+import "./DashboardPage.css";
 
 export default function DashboardPage({ user, records, contacts, triggerStatus }) {
   const buckets = calculateBuckets(records);

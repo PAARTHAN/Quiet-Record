@@ -1,7 +1,8 @@
 import { useState } from "react";
-import SectionHeader from "../components/SectionHeader";
-import { calculateBuckets, formatCurrency, formatServerDate } from "../storage";
-import { apiFetch } from "../api";
+import SectionHeader from "../../components/SectionHeader/SectionHeader";
+import { calculateBuckets, formatCurrency, formatServerDate } from "../../storage";
+import { apiFetch } from "../../api";
+import "./ProfilePage.css";
 
 export default function ProfilePage({ user, records, contacts, triggerStatus, setUser }) {
   const buckets = calculateBuckets(records);

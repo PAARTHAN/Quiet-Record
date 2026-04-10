@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { apiFetch } from "../api";
+import "./AuthPage.css";
+import { apiFetch } from "../../api";
 
 export default function AuthPage({ onLogin }) {
   const [mode, setMode] = useState("login");

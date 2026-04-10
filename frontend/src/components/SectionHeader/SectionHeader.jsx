@@ -1,3 +1,5 @@
+import "./SectionHeader.css";
+
 export default function SectionHeader({ title, description, action }) {
   return (
     <div className="section-header">

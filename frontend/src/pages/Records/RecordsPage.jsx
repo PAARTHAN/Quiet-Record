@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import SectionHeader from "../components/SectionHeader";
-import { apiFetch } from "../api";
-import { formatCurrency } from "../storage";
+import SectionHeader from "../../components/SectionHeader/SectionHeader";
+import { apiFetch } from "../../api";
+import { formatCurrency } from "../../storage";
+import "./RecordsPage.css";
 
 const categoryOptions = [
   "Debt",

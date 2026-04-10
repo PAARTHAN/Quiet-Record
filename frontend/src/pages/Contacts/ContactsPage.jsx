@@ -63,26 +63,42 @@ export default function ContactsPage({ user, contacts, loadContacts }) {
       />
 
       <div className="content-grid contacts-grid">
-        <div className="card form-panel sticky-card">
-          <div className="section-header compact">
-            <div>
-              <h1>{editingId ? "Edit trusted contact" : "Add trusted contact"}</h1>
-              <p>These contacts will receive the emergency release.</p>
+        <div className="left-column-stack">
+          <div className="card form-panel sticky-card">
+            <div className="section-header compact">
+              <div>
+                <h1>{editingId ? "Edit trusted contact" : "Add trusted contact"}</h1>
+                <p>These contacts will receive the emergency release.</p>
+              </div>
+            </div>
+            <form className="form-grid" onSubmit={handleSubmit}>
+              <input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[^a-zA-Z ]/g, "") })} pattern="[A-Za-z ]+" title="Use letters and spaces only" required />
+              <input type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+              <div className="two-col">
+                <input placeholder="Phone" inputMode="numeric" pattern="[0-9]{10}" maxLength="10" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })} />
+                <input placeholder="Relationship" value={form.relationship} onChange={(e) => setForm({ ...form, relationship: e.target.value.replace(/[^a-zA-Z ]/g, "") })} maxLength="40" />
+              </div>
+              <div className="action-row">
+                <button type="submit">{editingId ? "Save changes" : "Add contact"}</button>
+                <button type="button" className="secondary" onClick={resetForm}>Clear</button>
+              </div>
+            </form>
+            {message ? <div className="notice slim top-gap">{message}</div> : null}
+          </div>
+
+          <div className="card guide-card">
+            <h2>Quick guide</h2>
+            <div className="list">
+              <div className="item">
+                <strong>Who should you add?</strong>
+                <p className="muted small-gap">Choose someone who knows what to do when your data arrives.</p>
+              </div>
+              <div className="item">
+                <strong>Emergency reports</strong>
+                <p className="muted small-gap">Only these contacts will get your encrypted records and notes.</p>
+              </div>
             </div>
           </div>
-          <form className="form-grid" onSubmit={handleSubmit}>
-            <input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[^a-zA-Z ]/g, "") })} pattern="[A-Za-z ]+" title="Use letters and spaces only" required />
-            <input type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
-            <div className="two-col">
-              <input placeholder="Phone" inputMode="numeric" pattern="[0-9]{10}" maxLength="10" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })} />
-              <input placeholder="Relationship" value={form.relationship} onChange={(e) => setForm({ ...form, relationship: e.target.value.replace(/[^a-zA-Z ]/g, "") })} maxLength="40" />
-            </div>
-            <div className="action-row">
-              <button type="submit">{editingId ? "Save changes" : "Add contact"}</button>
-              <button type="button" className="secondary" onClick={resetForm}>Clear</button>
-            </div>
-          </form>
-          {message ? <div className="notice slim top-gap">{message}</div> : null}
         </div>
 
         <div className="card list-panel">
@@ -93,7 +109,7 @@ export default function ContactsPage({ user, contacts, loadContacts }) {
             </div>
           </div>
 
-          <div className="contact-grid">
+          <div className="contact-grid enhanced-contact-grid">
             {contacts.length === 0 ? (
               <div className="item muted">No trusted contacts added yet.</div>
             ) : (

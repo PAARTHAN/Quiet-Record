@@ -131,7 +131,7 @@ export default function RecordsPage({ user, records, loadRecords }) {
               <input placeholder="Amount" inputMode="decimal" pattern="^\d*(\.\d{0,2})?$" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value.replace(/[^\d.]/g, "") })} />
               <input placeholder="Person / company" value={form.owner} onChange={(e) => setForm({ ...form, owner: e.target.value })} maxLength="60" />
             </div>
-            <textarea placeholder="Details / notes / contact information" value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })} />
+            <textarea className="details-textarea" placeholder="Details / notes / contact information" value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })} />
             <div className="action-row">
               <button type="submit" disabled={saving}>{saving ? "Saving..." : editingId ? "Save changes" : "Add record"}</button>
               <button type="button" className="secondary" onClick={resetForm}>Clear</button>

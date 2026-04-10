@@ -10,10 +10,17 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
   const shownTriggeredAlertRef = useRef(false);
   const shownWarningAlertRef = useRef(false);
 
+  const setAutoMessage = (key, text) => {
+    setMessages((prev) => ({ ...prev, [key]: text }));
+    setTimeout(() => {
+      setMessages((prev) => ({ ...prev, [key]: "" }));
+    }, 5000);
+  };
+
   useEffect(() => {
     if (triggerStatus?.warning_sent && !shownWarningAlertRef.current) {
       shownWarningAlertRef.current = true;
-      setMessages((prev) => ({ ...prev, warning: "Warning email sent to the account owner at the 15-second mark." }));
+      setAutoMessage("warning", "Warning email sent to the account owner at the 15-second mark.");
     }
     if (!triggerStatus?.warning_sent) {
       shownWarningAlertRef.current = false;
@@ -23,7 +30,7 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
   useEffect(() => {
     if (triggerStatus?.is_triggered && !shownTriggeredAlertRef.current) {
       shownTriggeredAlertRef.current = true;
-      setMessages((prev) => ({ ...prev, trigger: "Emergency trigger executed automatically." }));
+      setAutoMessage("trigger", "Emergency trigger executed automatically.");
       alert("Emergency trigger has been executed.");
     }
     if (!triggerStatus?.is_triggered) {
@@ -34,10 +41,12 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
   async function handleCheckIn() {
     try {
       const data = await apiFetch(`/check-in/${user.id}`, { method: "POST" });
-      setMessages({ checkIn: data.message, trigger: "", warning: "" });
+      setAutoMessage("checkIn", data.message);
+      // Clear other messages immediately on check-in
+      setMessages((prev) => ({ ...prev, trigger: "", warning: "" }));
       setUser((prev) => ({ ...prev, last_check_in: data.last_check_in, is_triggered: false, warning_sent: false }));
     } catch (error) {
-      setMessages((prev) => ({ ...prev, checkIn: error.message }));
+      setAutoMessage("checkIn", error.message);
     }
   }
 
@@ -45,10 +54,10 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
     setSending(true);
     try {
       const data = await apiFetch(`/simulate-trigger/${user.id}`, { method: "POST" });
-      setMessages((prev) => ({ ...prev, trigger: data.message }));
+      setAutoMessage("trigger", data.message);
       setUser((prev) => ({ ...prev, is_triggered: true }));
     } catch (error) {
-      setMessages((prev) => ({ ...prev, trigger: error.message }));
+      setAutoMessage("trigger", error.message);
     } finally {
       setSending(false);
     }
@@ -82,15 +91,23 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
         </div>
         <div className="card action-card trigger-actions-card">
           <h2>Quick actions</h2>
-          <div className="action-stack">
-            <button onClick={handleCheckIn}>I am safe — check in now</button>
-            {messages.checkIn ? <div className="notice success slim">{messages.checkIn}</div> : null}
-            {messages.warning ? <div className="notice slim">{messages.warning}</div> : null}
+          <div className="no-gap-stack flex-1">
+            <div className="action-group">
+              <button onClick={handleCheckIn}>
+                <span className="btn-icon">🛡️</span>
+                I am safe — check in now
+              </button>
+              {messages.checkIn ? <div className="notice success slim vanish-notice">{messages.checkIn}</div> : null}
+              {messages.warning ? <div className="notice slim vanish-notice">{messages.warning}</div> : null}
+            </div>
 
-            <button className="danger" onClick={handleTrigger} disabled={sending}>
-              {sending ? "Processing..." : "Send emergency release now"}
-            </button>
-            {messages.trigger ? <div className="notice warning slim">{messages.trigger}</div> : null}
+            <div className="action-group">
+              <button className="danger" onClick={handleTrigger} disabled={sending}>
+                <span className="btn-icon">🚨</span>
+                {sending ? "Processing..." : "Send emergency release now"}
+              </button>
+              {messages.trigger ? <div className="notice warning slim vanish-notice">{messages.trigger}</div> : null}
+            </div>
           </div>
         </div>
       </div>

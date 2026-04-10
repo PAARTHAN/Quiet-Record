@@ -29,8 +29,74 @@
   flex-direction: column;
 }
 
+.no-gap-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.4s ease;
+}
+
+.no-gap-stack button {
+  height: 64px; /* Professional fixed height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  border-radius: 20px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.05rem;
+}
+
+.btn-icon {
+  font-size: 1.3rem;
+  transition: transform 0.3s ease;
+}
+
+.no-gap-stack button:hover .btn-icon {
+  transform: scale(1.2);
+}
+
+.no-gap-stack button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.vanish-notice {
+  margin: 0;
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  animation: noticeSlideIn 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+
+@keyframes noticeSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+
 .bg-white {
-  background-color: transparent !important; /* It acts as a shell mostly */
+  background-color: transparent !important;
 }
 
 .w-full {

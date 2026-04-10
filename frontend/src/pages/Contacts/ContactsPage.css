@@ -1,5 +1,47 @@
 .contacts-grid {
   grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.left-column-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  position: sticky;
+  top: 28px;
+}
+
+.left-column-stack .sticky-card {
+  position: static; /* Replaced by parent stack's sticky behavior */
+}
+
+.guide-card h2 {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+}
+
+.enhanced-contact-grid {
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.enhanced-contact-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.enhanced-contact-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.enhanced-contact-grid::-webkit-scrollbar-thumb {
+  background: rgba(53, 196, 139, 0.3);
+  border-radius: 8px;
+}
+
+.enhanced-contact-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(53, 196, 139, 0.5);
 }
 
 .contact-grid {
@@ -11,5 +53,8 @@
 @media (max-width: 1180px) {
   .contacts-grid {
     grid-template-columns: 1fr;
+  }
+  .left-column-stack {
+    position: static;
   }
 }

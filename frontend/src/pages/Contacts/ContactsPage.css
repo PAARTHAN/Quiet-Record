@@ -1,60 +1,175 @@
-.contacts-grid {
-  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+.contacts-dual-grid {
+  grid-template-columns: 1fr 1fr;
   align-items: start;
+  gap: 24px;
 }
 
-.left-column-stack {
+.contact-form-box, .contact-list-box {
+  min-height: 580px; /* Ensures the boxes fill the screen and look balanced */
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  position: sticky;
-  top: 28px;
 }
 
-.left-column-stack .sticky-card {
-  position: static; /* Replaced by parent stack's sticky behavior */
+.contact-small-grid {
+  margin-top: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.guide-card h2 {
-  font-size: 1.25rem;
-  margin-bottom: 12px;
-}
-
-.enhanced-contact-grid {
-  max-height: calc(100vh - 250px);
+.auto-scroll {
+  max-height: 480px;
   overflow-y: auto;
   padding-right: 8px;
 }
 
-.enhanced-contact-grid::-webkit-scrollbar {
-  width: 8px;
+.contact-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  transition: all 0.2s ease;
 }
 
-.enhanced-contact-grid::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+.contact-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(4px);
+}
+
+.contact-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-main strong {
+  font-size: 1.3rem;
+  letter-spacing: -0.2px;
+}
+
+.badge-pill {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  background: rgba(0, 230, 118, 0.15);
+  color: #00e676;
+  border-radius: 6px;
+  text-transform: uppercase;
+  font-weight: 800;
+  width: fit-content;
+  letter-spacing: 0.5px;
+}
+
+.small-font {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.contact-actions button.icon-link {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
   border-radius: 8px;
+  transition: all 0.2s ease;
+  margin-top: 0;
+  box-shadow: none;
 }
 
-.enhanced-contact-grid::-webkit-scrollbar-thumb {
-  background: rgba(53, 196, 139, 0.3);
-  border-radius: 8px;
+.contact-actions button.icon-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-base);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.enhanced-contact-grid::-webkit-scrollbar-thumb:hover {
-  background: rgba(53, 196, 139, 0.5);
+.contact-actions button.icon-link.danger {
+  color: var(--text-muted);
 }
 
-.contact-grid {
+.contact-actions button.icon-link.danger:hover {
+  background: transparent;
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.1);
+}
+
+.empty-notice {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.top-gap-large {
+  margin-top: 32px;
+}
+
+.section-header.center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.guidelines-bento {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
-@media (max-width: 1180px) {
-  .contacts-grid {
+.bento-card {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.3s ease;
+}
+
+.bento-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-4px);
+  border-color: rgba(255, 180, 84, 0.2);
+}
+
+.bento-icon {
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+}
+
+.bento-card h3 {
+  font-size: 1.1rem;
+  color: #ffe08f;
+  margin: 0;
+}
+
+.bento-card p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+@media (max-width: 1080px) {
+  .contacts-dual-grid,
+  .guidelines-bento {
     grid-template-columns: 1fr;
-  }
-  .left-column-stack {
-    position: static;
   }
 }

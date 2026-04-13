@@ -30,6 +30,12 @@ export default function RecordsPage({ user, records, loadRecords }) {
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [activeMenuId, setActiveMenuId] = useState(null);
+
+  const toggleMenu = (id, event) => {
+    event.stopPropagation();
+    setActiveMenuId(activeMenuId === id ? null : id);
+  };
 
   const filteredRecords = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -156,20 +162,36 @@ export default function RecordsPage({ user, records, loadRecords }) {
               <div className="item muted">No matching records found.</div>
             ) : (
               filteredRecords.map((item) => (
-                <div className="item rich-item record-card-elevated" key={item.id}>
+                <div className="item rich-item record-card-elevated" key={item.id} onClick={() => setActiveMenuId(null)}>
                   <div className="row-between align-start gap-12">
-                    <div>
+                    <div className="flex-1">
                       <strong>{item.title}</strong>
                       <div className="muted small-gap">{item.owner || "No counterparty"}</div>
                     </div>
-                    <span className="badge gold">{item.category || "Other"}</span>
+                    <div className="card-actions-wrapper">
+                      <span className="badge gold">{item.category || "Other"}</span>
+                      <button 
+                        className="more-actions-btn" 
+                        onClick={(e) => toggleMenu(item.id, e)}
+                        title="More actions"
+                      >
+                        ⋮
+                      </button>
+
+                      {activeMenuId === item.id && (
+                        <div className="record-actions-dropdown glass-card shadow-lg" onClick={(e) => e.stopPropagation()}>
+                          <button className="dropdown-item" onClick={() => { handleEdit(item); setActiveMenuId(null); }}>
+                            <span>✏️</span> Edit Record
+                          </button>
+                          <button className="dropdown-item danger" onClick={() => { handleDelete(item.id); setActiveMenuId(null); }}>
+                            <span>🗑️</span> Delete Record
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="record-amount">{formatCurrency(item.amount || 0)}</div>
                   <p className="muted small-gap">{item.details || "No extra details"}</p>
-                  <div className="action-row top-gap">
-                    <button className="secondary" onClick={() => handleEdit(item)}>Edit</button>
-                    <button className="danger" onClick={() => handleDelete(item.id)}>Delete</button>
-                  </div>
                 </div>
               ))
             )}

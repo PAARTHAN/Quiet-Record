@@ -4,8 +4,20 @@
 
 .record-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.rich-item.record-card-elevated {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rich-item.record-card-elevated strong {
+  font-size: 1.25rem;
+  letter-spacing: -0.2px;
 }
 
 .enhanced-record-list-grid {
@@ -33,10 +45,17 @@
 }
 
 .record-amount {
-  margin-top: 14px;
-  font-size: 1.2rem;
+  margin-top: 8px;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #fff2d9;
+  letter-spacing: 0.5px;
+}
+
+.rich-item.record-card-elevated p.muted {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-top: 4px;
 }
 
 .search-input {
@@ -68,4 +87,90 @@
   max-height: 400px;
   resize: none;
   overflow-y: auto;
+}
+
+.card-actions-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.more-actions-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.more-actions-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-base);
+}
+
+.record-actions-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 100;
+  min-width: 160px;
+  margin-top: 8px;
+  background: rgba(30, 30, 35, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px;
+  animation: slideInUp 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-base);
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item span {
+  font-size: 1.1rem;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-item.danger {
+  color: #ff9d9d; /* Muted red initially */
+}
+
+.dropdown-item.danger:hover {
+  background: rgba(255, 77, 77, 0.15);
+  color: #ff4d4d; /* Bright red only on hover */
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

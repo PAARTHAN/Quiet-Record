@@ -4,6 +4,16 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
+    user_id: Optional[int] = None
+
+
 class UserCreate(BaseModel):
     name: str
     email: EmailStr

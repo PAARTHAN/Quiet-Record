@@ -67,10 +67,10 @@ export default function RecordsPage({ user, records, loadRecords }) {
         await apiFetch(`/records/${editingId}`, { method: "PUT", body: JSON.stringify(payload) });
         setMessage("Record updated.");
       } else {
-        await apiFetch(`/records/${user.id}`, { method: "POST", body: JSON.stringify(payload) });
+        await apiFetch("/records", { method: "POST", body: JSON.stringify(payload) });
         setMessage("Record added.");
       }
-      await loadRecords(user.id);
+      await loadRecords();
       setForm(emptyRecord);
       setEditingId(null);
     } catch (error) {
@@ -95,7 +95,7 @@ export default function RecordsPage({ user, records, loadRecords }) {
   async function handleDelete(id) {
     try {
       await apiFetch(`/records/${id}`, { method: "DELETE" });
-      await loadRecords(user.id);
+      await loadRecords();
       setMessage("Record deleted.");
       if (editingId === id) {
         setForm(emptyRecord);

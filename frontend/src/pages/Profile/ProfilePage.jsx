@@ -11,7 +11,7 @@ export default function ProfilePage({ user, records, contacts, triggerStatus, se
 
   async function handleSaveLastMessage() {
     try {
-      await apiFetch(`/users/${user.id}/last-message`, {
+      await apiFetch("/users/me/last-message", {
         method: "PUT",
         body: JSON.stringify({ last_message: lastMessage }),
       });

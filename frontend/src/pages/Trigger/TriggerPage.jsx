@@ -40,7 +40,7 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
 
   async function handleCheckIn() {
     try {
-      const data = await apiFetch(`/check-in/${user.id}`, { method: "POST" });
+      const data = await apiFetch("/check-in", { method: "POST" });
       setAutoMessage("checkIn", data.message);
       // Clear other messages immediately on check-in
       setMessages((prev) => ({ ...prev, trigger: "", warning: "" }));
@@ -53,7 +53,7 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
   async function handleTrigger() {
     setSending(true);
     try {
-      const data = await apiFetch(`/simulate-trigger/${user.id}`, { method: "POST" });
+      const data = await apiFetch("/trigger/simulate", { method: "POST" });
       setAutoMessage("trigger", data.message);
       setUser((prev) => ({ ...prev, is_triggered: true }));
     } catch (error) {

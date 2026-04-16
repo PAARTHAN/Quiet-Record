@@ -18,12 +18,33 @@ export default function AuthPage({ onLogin }) {
     setLoading(true);
 
     try {
-      const path = mode === "register" ? "/register" : "/login";
-      const payload = mode === "register"
-        ? { ...form, name: form.name.trim(), email: form.email.trim().toLowerCase() }
-        : { email: form.email.trim().toLowerCase(), password: form.password };
-      const data = await apiFetch(path, { method: "POST", body: JSON.stringify(payload) });
-      onLogin(data);
+      if (mode === "register") {
+        const payload = { ...form, name: form.name.trim(), email: form.email.trim().toLowerCase() };
+        await apiFetch("/register", { method: "POST", body: JSON.stringify(payload) });
+        // After registration, auto-login or switch to login mode
+        setMode("login");
+        setMessage("Registration successful! Please login.");
+        setLoading(false);
+        return;
+      }
+
+      // Login Flow
+      const formData = new URLSearchParams();
+      formData.append("username", form.email.trim().toLowerCase());
+      formData.append("password", form.password);
+
+      const tokenData = await apiFetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
+      });
+
+      // Store token
+      localStorage.setItem("access_token", tokenData.access_token);
+
+      // Fetch user profile
+      const user = await apiFetch("/me");
+      onLogin(user);
       setForm({ name: "", email: "", password: "" });
     } catch (error) {
       setMessage(error.message);

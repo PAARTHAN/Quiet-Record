@@ -1,5 +1,0 @@
-Warning email target: paarthanca@gmail.com
-Status: sent
-Reason: Emails sent successfully
-Generated at: 10 Apr 2026, 04:46:42 PM IST
-User: paarthanca@gmail.com

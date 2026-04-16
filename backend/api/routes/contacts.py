@@ -4,21 +4,18 @@ from sqlalchemy.orm import Session
 from db.database import get_db
 from db.models import TrustedContact, User
 from schemas.schemas import TrustedContactCreate, TrustedContactResponse, TrustedContactUpdate
+from .users import get_current_user
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
-@router.get("/{user_id}", response_model=list[TrustedContactResponse])
-def get_contacts(user_id: int, db: Session = Depends(get_db)):
-    return db.query(TrustedContact).filter(TrustedContact.user_id == user_id).all()
+@router.get("", response_model=list[TrustedContactResponse])
+def get_contacts(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return db.query(TrustedContact).filter(TrustedContact.user_id == current_user.id).all()
 
-@router.post("/{user_id}", response_model=TrustedContactResponse)
-def create_contact(user_id: int, contact: TrustedContactCreate, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
+@router.post("", response_model=TrustedContactResponse)
+def create_contact(contact: TrustedContactCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     new_contact = TrustedContact(
-        user_id=user_id,
+        user_id=current_user.id,
         name=contact.name,
         email=contact.email,
         phone=contact.phone,
@@ -30,8 +27,12 @@ def create_contact(user_id: int, contact: TrustedContactCreate, db: Session = De
     return new_contact
 
 @router.put("/{contact_id}", response_model=TrustedContactResponse)
-def update_contact(contact_id: int, contact: TrustedContactUpdate, db: Session = Depends(get_db)):
-    existing = db.query(TrustedContact).filter(TrustedContact.id == contact_id).first()
+def update_contact(contact_id: int, contact: TrustedContactUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    existing = db.query(TrustedContact).filter(
+        TrustedContact.id == contact_id,
+        TrustedContact.user_id == current_user.id
+    ).first()
+    
     if not existing:
         raise HTTPException(status_code=404, detail="Contact not found")
 
@@ -43,10 +44,13 @@ def update_contact(contact_id: int, contact: TrustedContactUpdate, db: Session =
     db.refresh(existing)
     return existing
 
-
 @router.delete("/{contact_id}")
-def delete_contact(contact_id: int, db: Session = Depends(get_db)):
-    existing = db.query(TrustedContact).filter(TrustedContact.id == contact_id).first()
+def delete_contact(contact_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    existing = db.query(TrustedContact).filter(
+        TrustedContact.id == contact_id,
+        TrustedContact.user_id == current_user.id
+    ).first()
+    
     if not existing:
         raise HTTPException(status_code=404, detail="Contact not found")
 

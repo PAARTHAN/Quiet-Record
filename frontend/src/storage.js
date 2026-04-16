@@ -5,6 +5,23 @@ export function getStoredUser() {
   return saved ? JSON.parse(saved) : null;
 }
 
+export function clearAllSessionData() {
+  const keysToKeep = []; // Keep nothing for a full logout/cleanup
+  const legacyKeys = [
+    "digital_legacy_sensitive_data",
+    "digital_legacy_user",
+    "dls_records",
+    "dls_user",
+    "token",
+    "user",
+    "death_note_user",
+    "access_token",
+    "refresh_token"
+  ];
+
+  legacyKeys.forEach(key => localStorage.removeItem(key));
+}
+
 export function setStoredUser(user) {
   if (user) {
     localStorage.setItem(USER_KEY, JSON.stringify(user));

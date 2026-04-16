@@ -19,12 +19,12 @@ export default function ContactsPage({ user, contacts, loadContacts }) {
         await apiFetch(`/contacts/${editingId}`, { method: "PUT", body: JSON.stringify(form) });
         setMessage("Contact updated.");
       } else {
-        await apiFetch(`/contacts/${user.id}`, { method: "POST", body: JSON.stringify(form) });
+        await apiFetch("/contacts", { method: "POST", body: JSON.stringify(form) });
         setMessage("Contact added.");
       }
       setForm(emptyContact);
       setEditingId(null);
-      await loadContacts(user.id);
+      await loadContacts();
     } catch (error) {
       setMessage(error.message);
     }
@@ -33,7 +33,7 @@ export default function ContactsPage({ user, contacts, loadContacts }) {
   async function handleDelete(id) {
     try {
       await apiFetch(`/contacts/${id}`, { method: "DELETE" });
-      await loadContacts(user.id);
+      await loadContacts();
       setMessage("Contact deleted.");
     } catch (error) {
       setMessage(error.message);

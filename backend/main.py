@@ -7,8 +7,8 @@ from api.routes import users, records, contacts, trigger
 from services.trigger_engine import auto_trigger_worker
 from core.config import TRIGGER_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# Create database tables (Disabled in favor of Alembic migrations)
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Death Note Backend",

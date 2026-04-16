@@ -4,20 +4,31 @@
 
 .record-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 20px;
 }
 
 .rich-item.record-card-elevated {
-  padding: 24px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Force flex children to allow text overflow and securely consume available space */
+.rich-item.record-card-elevated > div.row-between > div {
+  min-width: 0;
+  flex: 1;
 }
 
 .rich-item.record-card-elevated strong {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   letter-spacing: -0.2px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .enhanced-record-list-grid {
@@ -45,17 +56,28 @@
 }
 
 .record-amount {
-  margin-top: 8px;
-  font-size: 1.5rem;
+  margin-top: 4px;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
   font-weight: 800;
   color: #fff2d9;
-  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rich-item.record-card-elevated p.muted {
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.5;
-  margin-top: 4px;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rich-item.record-card-elevated .muted.small-gap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .search-input {

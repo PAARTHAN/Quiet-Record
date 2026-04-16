@@ -1,11 +1,11 @@
 .contacts-dual-grid {
   grid-template-columns: 1fr 1fr;
-  align-items: start;
+  align-items: stretch;
   gap: 24px;
 }
 
 .contact-form-box, .contact-list-box {
-  min-height: 580px; /* Ensures the boxes fill the screen and look balanced */
+  height: 580px; /* Locks the boxes to an identical, symmetrical height */
   display: flex;
   flex-direction: column;
 }
@@ -19,9 +19,18 @@
 }
 
 .auto-scroll {
-  max-height: 480px;
+  flex: 1;
+  min-height: 0; /* Critical for flex children to allow overflow scrolling */
   overflow-y: auto;
   padding-right: 8px;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.auto-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
 }
 
 .contact-row {
@@ -33,12 +42,36 @@
   background: rgba(255, 255, 255, 0.03);
   border-radius: 16px;
   transition: all 0.2s ease;
+  flex-shrink: 0; /* Prevents vertical crushing inside the scroll view */
 }
 
 .contact-row:hover {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.15);
   transform: translateX(4px);
+}
+
+.contact-info-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.contact-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 180, 84, 0.15), rgba(255, 180, 84, 0.05));
+  border: 1px solid rgba(255, 180, 84, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: #ffe2b7;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .contact-main {

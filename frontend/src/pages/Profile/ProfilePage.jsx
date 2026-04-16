@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
-import { calculateBuckets, formatCurrency, formatServerDate } from "../../storage";
+import { calculateBuckets, currencyTotal, formatCurrency, formatServerDate } from "../../storage";
 import { apiFetch } from "../../api";
 import "./ProfilePage.css";
 
@@ -44,16 +44,45 @@ export default function ProfilePage({ user, records, contacts, triggerStatus, se
           </div>
         </div>
 
-        <div className="card">
-          <h2>Financial summary</h2>
-          <div className="triple-summary">
-            <div className="mini-stat"><span>Debt</span><strong>{formatCurrency(buckets.debt)}</strong></div>
-            <div className="mini-stat"><span>Money owed to me</span><strong>{formatCurrency(buckets.lent)}</strong></div>
-            <div className="mini-stat"><span>Assets</span><strong>{formatCurrency(buckets.assets)}</strong></div>
+        <div className="card flex-column">
+          <div className="row-between section-spacer">
+            <div>
+              <h2>Financial summary</h2>
+              <p className="muted">Overview of your documented ecosystem.</p>
+            </div>
+            <div className="badge gold">Total: {formatCurrency(currencyTotal(records))}</div>
           </div>
-          <div className="list top-gap">
-            <div className="item row-between"><span>Total records</span><strong>{records.length}</strong></div>
-            <div className="item row-between"><span>Trusted contacts</span><strong>{contacts.length}</strong></div>
+
+          <div className="triple-summary">
+            <div className="mini-stat tint-debt">
+              <span>Debt liabilities</span>
+              <strong className="text-debt">{formatCurrency(buckets.debt)}</strong>
+            </div>
+            <div className="mini-stat tint-lent">
+              <span>Expected inflows</span>
+              <strong className="text-lent">{formatCurrency(buckets.lent)}</strong>
+            </div>
+            <div className="mini-stat tint-asset">
+              <span>Retained assets</span>
+              <strong className="text-asset">{formatCurrency(buckets.assets)}</strong>
+            </div>
+          </div>
+
+          <div className="list flex-grow top-gap list-decor">
+            <div className="item row-between outline-item">
+              <div className="row-align gap-12">
+                <span className="icon-circle">📂</span>
+                <span>Total records in vault</span>
+              </div>
+              <strong className="emerald-text">{records.length} stored</strong>
+            </div>
+            <div className="item row-between outline-item">
+              <div className="row-align gap-12">
+                <span className="icon-circle">🛡️</span>
+                <span>Trusted recipients</span>
+              </div>
+              <strong className="emerald-text">{contacts.length} verified</strong>
+            </div>
           </div>
         </div>
 

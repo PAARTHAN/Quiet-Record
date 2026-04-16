@@ -63,9 +63,31 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
     }
   }
 
-  const countdown = triggerStatus ? triggerStatus.seconds_until_trigger : null;
-  const progress = triggerStatus
-    ? Math.min(100, Math.round((triggerStatus.seconds_since_check_in / triggerStatus.threshold_seconds) * 100))
+  const [localCountdown, setLocalCountdown] = useState(null);
+  const [localSince, setLocalSince] = useState(null);
+
+  // Sync with ground truth from API
+  useEffect(() => {
+    if (triggerStatus?.seconds_until_trigger !== undefined) {
+      setLocalCountdown(triggerStatus.seconds_until_trigger);
+      setLocalSince(triggerStatus.seconds_since_check_in);
+    }
+  }, [triggerStatus?.seconds_until_trigger, triggerStatus?.seconds_since_check_in]);
+
+  // Smooth local interpolator 
+  useEffect(() => {
+    if (localCountdown === null || localCountdown <= 0 || triggerStatus?.is_triggered) return;
+    
+    const timer = setInterval(() => {
+      setLocalCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+      setLocalSince((prev) => (prev !== null ? prev + 1 : prev));
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [localCountdown, triggerStatus?.is_triggered]);
+
+  const progress = triggerStatus && localSince !== null
+    ? Math.min(100, Math.round((localSince / triggerStatus.threshold_seconds) * 100))
     : 0;
 
   return (
@@ -78,7 +100,7 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
       <div className="trigger-page-grid enhanced-trigger-grid bg-white w-full">
         <div className="card trigger-timer-card glow-card">
           <span className="eyebrow warm">Live timer</span>
-          <div className="timer-hero">{countdown !== null ? `${countdown}s` : "--"}</div>
+          <div className="timer-hero">{localCountdown !== null ? `${localCountdown}s` : "--"}</div>
           <p className="muted">Remaining before the inactivity trigger fires automatically.</p>
           <div className="progress-shell">
             <div className="progress-bar" style={{ width: `${progress}%` }} />

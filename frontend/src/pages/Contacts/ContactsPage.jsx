@@ -123,10 +123,13 @@ export default function ContactsPage({ user, contacts, loadContacts }) {
             ) : (
               contacts.map((contact) => (
                 <div className="contact-row card" key={contact.id}>
-                  <div className="contact-main">
-                    <strong>{contact.name}</strong>
-                    <span className="badge-pill">{contact.relationship_name || "Recipient"}</span>
-                    <div className="muted small-font">{contact.email}</div>
+                  <div className="contact-info-wrapper">
+                    <div className="contact-avatar">{getInitials(contact.name)}</div>
+                    <div className="contact-main">
+                      <strong>{contact.name}</strong>
+                      <span className="badge-pill">{contact.relationship_name || "Recipient"}</span>
+                      <div className="muted small-font">{contact.email}</div>
+                    </div>
                   </div>
                   <div className="contact-actions">
                     <button className="icon-link" onClick={() => startEdit(contact)}>Edit</button>

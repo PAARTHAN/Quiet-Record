@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import { calculateBuckets, currencyTotal, formatCurrency, formatServerDate, getDashboardInsights } from "../../storage";
 import "./DashboardPage.css";
@@ -5,7 +6,27 @@ import "./DashboardPage.css";
 export default function DashboardPage({ user, records, contacts, triggerStatus }) {
   const buckets = calculateBuckets(records);
   const insights = getDashboardInsights(records);
-  const recentRecords = [...records].slice(0, 10);
+  const recentRecords = [...records].slice(0, 5);
+
+  const [localCountdown, setLocalCountdown] = useState(null);
+
+  // Sync the local countdown with the ground truth whenever the 5s API ping returns
+  useEffect(() => {
+    if (triggerStatus?.seconds_until_trigger !== undefined) {
+      setLocalCountdown(triggerStatus.seconds_until_trigger);
+    }
+  }, [triggerStatus?.seconds_until_trigger]);
+
+  // Interpolate the countdown visually every 1 second
+  useEffect(() => {
+    if (localCountdown === null || localCountdown <= 0 || user.is_triggered) return;
+
+    const timer = setInterval(() => {
+      setLocalCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [localCountdown, user.is_triggered]);
 
   return (
     <>
@@ -25,7 +46,7 @@ export default function DashboardPage({ user, records, contacts, triggerStatus }
 
         <div className="card summary-card">
           <span className="eyebrow">Live countdown</span>
-          <div className="timer-hero">{triggerStatus ? `${triggerStatus.seconds_until_trigger}s` : "--"}</div>
+          <div className="timer-hero">{localCountdown !== null ? `${localCountdown}s` : "--"}</div>
           <p className="muted">Time remaining before the Trigger gets Pulled.</p>
         </div>
       </div>

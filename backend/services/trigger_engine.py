@@ -112,7 +112,8 @@ def check_auto_triggers_once():
                         f"User: {user.email}\n",
                         encoding='utf-8'
                     )
-                except Exception:
+                except Exception as e:
+                    print(f"[Trigger Engine] Warning email failed for {user.email} - {str(e)}")
                     db.rollback()
 
             if user.is_triggered:
@@ -120,9 +121,11 @@ def check_auto_triggers_once():
             if seconds_since >= TRIGGER_THRESHOLD_SECONDS:
                 try:
                     run_release(user, db)
-                except HTTPException:
+                except HTTPException as e:
+                    print(f"[Trigger Engine] Skipping user {user.email} - {e.detail}")
                     db.rollback()
-                except Exception:
+                except Exception as e:
+                    print(f"[Trigger Engine] Unexpected failure for {user.email} - {str(e)}")
                     db.rollback()
     finally:
         db.close()

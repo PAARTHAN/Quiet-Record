@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from db.database import Base, engine
 from api.routes import users, records, contacts, trigger
 from services.trigger_engine import auto_trigger_worker
-from core.config import TRIGGER_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS
+from core.config import TRIGGER_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS, CORS_ALLOWED_ORIGINS
 
 # Create database tables (Disabled in favor of Alembic migrations)
 # Base.metadata.create_all(bind=engine)
@@ -18,12 +18,7 @@ app = FastAPI(
 # Setup CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-    ],
+    allow_origins=CORS_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

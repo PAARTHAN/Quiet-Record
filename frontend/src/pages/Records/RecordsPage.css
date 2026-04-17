@@ -16,12 +16,6 @@
   min-width: 0;
 }
 
-/* Force flex children to allow text overflow and securely consume available space */
-.rich-item.record-card-elevated > div.row-between > div {
-  min-width: 0;
-  flex: 1;
-}
-
 .rich-item.record-card-elevated strong {
   font-size: 1.1rem;
   letter-spacing: -0.2px;
@@ -116,6 +110,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .more-actions-btn {

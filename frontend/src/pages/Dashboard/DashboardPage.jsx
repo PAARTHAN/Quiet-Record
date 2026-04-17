@@ -90,7 +90,7 @@ export default function DashboardPage({ user, records, contacts, triggerStatus }
               recentRecords.map((item) => (
                 <div className="item rich-item record-card-elevated" key={item.id}>
                   <div className="row-between align-start gap-12">
-                    <div>
+                    <div className="flex-1">
                       <strong>{item.title}</strong>
                       <div className="muted small-gap">{item.owner || "No person or company added"}</div>
                     </div>

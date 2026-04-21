@@ -5,10 +5,17 @@ from jose import JWTError, jwt
 
 from db.database import get_db
 from db.models import User
-from schemas.schemas import UserCreate, UserResponse, Token, TokenData, LastMessageUpdate, LastMessageResponse
-from core.security import hash_password, verify_password, create_access_token, create_refresh_token
+from schemas.schemas import (
+    UserCreate, UserResponse, Token, TokenData, LastMessageUpdate, 
+    LastMessageResponse, ForgotPasswordRequest, ResetPasswordRequest
+)
+from core.security import (
+    hash_password, verify_password, create_access_token, 
+    create_refresh_token, create_password_reset_token, verify_password_reset_token
+)
 from core.utils import utc_naive_now, as_api_datetime_string
 from core.config import SECRET_KEY, ALGORITHM
+from services.email_service import send_password_reset_email
 
 router = APIRouter()
 
@@ -142,3 +149,44 @@ def check_in_me(current_user: User = Depends(get_current_user), db: Session = De
         "is_triggered": False,
         "warning_sent": False,
     }
+
+
+@router.post("/forgot-password")
+async def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == payload.email).first()
+    # We always return 200 for security, to avoid revealing if an email exists
+    if user:
+        token = create_password_reset_token(user.email, user.password_hash)
+        send_password_reset_email(user.email, token)
+    
+    return {"message": "If an account exists with this email, a reset link has been sent."}
+
+
+@router.post("/reset-password")
+async def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    # 1. We don't know the user yet, but the token is signed with their (old) password hash.
+    # We need to find the user first. But how? The token contains 'sub' (email).
+    # We can decode without verification to get 'sub'.
+    try:
+        from jose import jwt as jose_jwt
+        unverified_payload = jose_jwt.get_unverified_claims(payload.token)
+        email = unverified_payload.get("sub")
+        if not email:
+            raise HTTPException(status_code=400, detail="Invalid token")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid token")
+
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid token or user not found")
+
+    # 2. Now verify with the user's password hash
+    verified_email = verify_password_reset_token(payload.token, user.password_hash)
+    if not verified_email or verified_email != email:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    # 3. Update password
+    user.password_hash = hash_password(payload.new_password)
+    db.commit()
+    
+    return {"message": "Password updated successfully"}

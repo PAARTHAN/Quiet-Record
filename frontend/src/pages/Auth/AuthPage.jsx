@@ -3,7 +3,7 @@ import "./AuthPage.css";
 import { apiFetch } from "../../api";
 
 export default function AuthPage({ onLogin }) {
-  const [mode, setMode] = useState("login");
+  const [mode, setMode] = useState("login"); // login, register, forgot
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -53,6 +53,25 @@ export default function AuthPage({ onLogin }) {
     }
   }
 
+  async function handleForgotPassword(event) {
+    event.preventDefault();
+    setMessage("");
+    setLoading(true);
+
+    try {
+      const response = await apiFetch("/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email: form.email.trim().toLowerCase() }),
+      });
+      setMessage(response.message);
+      // Don't switch mode immediately, let them see the message
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="auth-page">
       <div className="auth-hero card glass">
@@ -71,39 +90,70 @@ export default function AuthPage({ onLogin }) {
 
         <div className="section-header compact">
           <div>
-            <h1>{mode === "register" ? "Create your account" : "Welcome back"}</h1>
-            <p>{mode === "register" ? "Set up a account to start managing your records." : "Sign in to continue to your personal workspace."}</p>
+            <h1>
+              {mode === "register" ? "Create your account" : 
+               mode === "forgot" ? "Reset your password" : "Welcome back"}
+            </h1>
+            <p>
+              {mode === "register" ? "Set up a account to start managing your records." : 
+               mode === "forgot" ? "Enter your email to receive a password reset link." : "Sign in to continue to your personal workspace."}
+            </p>
           </div>
         </div>
 
-        <form className="form-grid" onSubmit={handleSubmit}>
-          {mode === "register" ? (
+        {mode === "forgot" ? (
+          <form className="form-grid" onSubmit={handleForgotPassword}>
             <input
-              placeholder="Full name"
-              value={form.name}
-              onChange={(e) => updateName(e.target.value)}
-              pattern="[A-Za-z ]+"
-              title="Use letters and spaces only"
+              type="email"
+              placeholder="Email address"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
             />
-          ) : null}
-          <input
-            type="email"
-            placeholder="Email address"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            minLength="8"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            required
-          />
-          <button type="submit" disabled={loading}>{loading ? "Please wait..." : mode === "register" ? "Create account" : "Login"}</button>
-        </form>
+            <button type="submit" disabled={loading}>{loading ? "Sending..." : "Send Reset Link"}</button>
+            <button className="text-button" type="button" onClick={() => setMode("login")}>Back to login</button>
+          </form>
+        ) : (
+          <form className="form-grid" onSubmit={handleSubmit}>
+            {mode === "register" ? (
+              <input
+                placeholder="Full name"
+                value={form.name}
+                onChange={(e) => updateName(e.target.value)}
+                pattern="[A-Za-z ]+"
+                title="Use letters and spaces only"
+                required
+              />
+            ) : null}
+            <input
+              type="email"
+              placeholder="Email address"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              minLength="8"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              required
+            />
+            {mode === "login" && (
+              <div className="form-options">
+                <button 
+                  className="text-button small" 
+                  type="button" 
+                  onClick={() => setMode("forgot")}
+                >
+                  Forgot your password?
+                </button>
+              </div>
+            )}
+            <button type="submit" disabled={loading}>{loading ? "Please wait..." : mode === "register" ? "Create account" : "Login"}</button>
+          </form>
+        )}
 
         {message ? <div className="notice warning top-gap">{message}</div> : null}
       </div>

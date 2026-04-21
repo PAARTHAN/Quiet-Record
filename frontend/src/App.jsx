@@ -7,6 +7,7 @@ import RecordsPage from "./pages/Records/RecordsPage";
 import ContactsPage from "./pages/Contacts/ContactsPage";
 import TriggerPage from "./pages/Trigger/TriggerPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
+import ResetPasswordPage from "./pages/Auth/ResetPasswordPage";
 import { apiFetch, logout as apiLogout } from "./api";
 import { clearAllSessionData, getStoredUser, setStoredUser } from "./storage";
 
@@ -162,7 +163,12 @@ export default function App() {
   }
 
   if (!user) {
-    return <AuthPage onLogin={setUser} backendStatus={backendStatus} />;
+    return (
+      <Routes>
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="*" element={<AuthPage onLogin={setUser} backendStatus={backendStatus} />} />
+      </Routes>
+    );
   }
 
   return (

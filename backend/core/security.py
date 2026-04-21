@@ -44,3 +44,20 @@ def create_refresh_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def create_password_reset_token(email: str, password_hash: str):
+    # Use password_hash as part of the secret to ensure it's one-time use
+    reset_secret = SECRET_KEY + password_hash
+    expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode = {"sub": email, "exp": expire}
+    return jwt.encode(to_encode, reset_secret, algorithm=ALGORITHM)
+
+
+def verify_password_reset_token(token: str, password_hash: str) -> Optional[str]:
+    reset_secret = SECRET_KEY + password_hash
+    try:
+        payload = jwt.decode(token, reset_secret, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except Exception:
+        return None

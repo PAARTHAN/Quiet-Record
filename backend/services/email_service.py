@@ -12,12 +12,22 @@ def send_emergency_email(
     attachment_name: str | None = None,
     attachment_content: str | None = None,
 ) -> tuple[bool, str]:
-    smtp_host = os.getenv("SMTP_HOST")
-    smtp_port = os.getenv("SMTP_PORT")
-    smtp_username = os.getenv("SMTP_USERNAME")
-    smtp_password = os.getenv("SMTP_PASSWORD")
-    smtp_from_email = os.getenv("SMTP_FROM_EMAIL") or smtp_username
-    use_tls = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
+    def clean_env_var(val: str | None) -> str | None:
+        if val is None:
+            return None
+        val = val.strip()
+        if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+            val = val[1:-1].strip()
+        return val
+
+    smtp_host = clean_env_var(os.getenv("SMTP_HOST"))
+    smtp_port = clean_env_var(os.getenv("SMTP_PORT"))
+    smtp_username = clean_env_var(os.getenv("SMTP_USERNAME"))
+    smtp_password = clean_env_var(os.getenv("SMTP_PASSWORD"))
+    smtp_from_email = clean_env_var(os.getenv("SMTP_FROM_EMAIL")) or smtp_username
+    
+    use_tls_raw = clean_env_var(os.getenv("SMTP_USE_TLS")) or "true"
+    use_tls = use_tls_raw.lower() == "true"
 
     if not (smtp_host and smtp_port and smtp_from_email):
         return False, "SMTP is not configured"

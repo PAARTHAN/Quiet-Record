@@ -169,12 +169,15 @@ export default function App() {
     };
 
     ws.onerror = (error) => {
+      if (cancelledRef.current) return;
       console.error("WebSocket Error:", error);
     };
 
     return () => {
       cancelledRef.current = true;
-      ws.close();
+      if (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
     };
   }, [user?.id]);
 

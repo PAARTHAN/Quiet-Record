@@ -414,256 +414,221 @@ button.danger {
 }
 
 /* ==========================================================================
-   MOBILE & TABLET VIEWPORTS: DESKTOP SIMULATION (SCALED DOWN)
+   MOBILE VIEWPORT: NATIVE APP EXPERIENCE (SCALED & STACKED)
    ========================================================================== */
-@media (max-width: 900px) {
-  /* Layout: Shell & Sidebar scale down but stay side-by-side */
-  .shell {
-    grid-template-columns: 160px minmax(0, 1fr) !important;
-  }
-  
-  .sidebar {
-    width: 160px !important;
-    padding: 16px 12px !important;
-    gap: 14px !important;
-    position: sticky !important;
-    height: 100vh !important;
-    border-right: 1px solid var(--border) !important;
-    border-bottom: none !important;
-  }
-  
-  .brand {
-    font-size: 1.1rem !important;
-  }
-  
-  .nav-links {
-    gap: 10px !important;
-  }
-  
-  .nav-link {
-    min-height: 38px !important;
-    padding: 0 10px !important;
-    border-radius: 12px !important;
-  }
-  
-  .nav-link__label {
-    font-size: 0.8rem !important;
-  }
-  
-  .sidebar-footer {
-    display: grid !important;
-    gap: 10px !important;
-  }
-  
-  .user-pill {
-    padding: 12px !important;
-    border-radius: 12px !important;
-  }
-  
-  .user-pill__name {
-    font-size: 1rem !important;
-  }
-  
-  button.secondary.full-width {
-    padding: 8px 12px !important;
-    font-size: 0.8rem !important;
-    border-radius: 12px !important;
-  }
-
-  /* Content area */
-  .content-area {
-    padding: 14px !important;
-  }
-  
-  .page-shell {
-    gap: 14px !important;
-  }
-
-  /* Keep all grids side-by-side (2-column or 4-column) */
-  .dashboard-hero-grid {
-    display: grid !important;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) !important;
-    gap: 14px !important;
-  }
-  
-  .stats-grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 10px !important;
-  }
-  
-  .dashboard-main-grid {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) !important;
-    gap: 14px !important;
-  }
-  
-  .records-grid, 
-  .contacts-dual-grid {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr) !important;
-    gap: 14px !important;
-  }
-  
-  .enhanced-trigger-grid {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) !important;
-    gap: 14px !important;
-  }
-  
-  .two-col {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
-  }
-
-  /* Scaled-down general UI elements */
-  .card {
-    padding: 14px !important;
-    border-radius: 14px !important;
-  }
-  
-  .item {
-    padding: 10px !important;
-    border-radius: 12px !important;
-  }
-  
-  .timer-hero {
-    font-size: 1.8rem !important;
-  }
-  
-  .eyebrow {
-    font-size: 0.75rem !important;
-    margin-bottom: 6px !important;
-  }
-  
-  h1, h2, h3 {
-    font-size: 1.1rem !important;
-    margin-bottom: 6px !important;
-  }
-  
-  p, span, div, strong, label, input, select, textarea, button {
-    font-size: 0.8rem !important;
-  }
-  
-  input, select, textarea {
-    padding: 8px 10px !important;
-    border-radius: 12px !important;
-  }
-  
-  button {
-    padding: 8px 12px !important;
-    border-radius: 10px !important;
-    margin-top: 5px !important;
-  }
+.mobile-header {
+  display: none;
 }
 
-@media (max-width: 500px) {
-  /* Ultra-compact side-by-side mode for small screens (375px - 500px) */
+@media (max-width: 800px) {
+  /* Layout structure */
   .shell {
-    grid-template-columns: 110px minmax(0, 1fr) !important;
-  }
-  
-  .sidebar {
-    width: 110px !important;
-    padding: 12px 6px !important;
-    gap: 8px !important;
-  }
-  
-  .brand {
-    font-size: 0.85rem !important;
-  }
-  
-  .nav-links {
-    gap: 6px !important;
-  }
-  
-  .nav-link {
-    min-height: 32px !important;
-    padding: 0 6px !important;
-    border-radius: 8px !important;
-  }
-  
-  .nav-link__label {
-    font-size: 0.65rem !important;
-  }
-  
-  .user-pill {
-    padding: 6px !important;
-    border-radius: 6px !important;
-  }
-  
-  .user-pill__name {
-    font-size: 0.75rem !important;
-  }
-  
-  button.secondary.full-width {
-    padding: 6px 8px !important;
-    font-size: 0.65rem !important;
-    border-radius: 8px !important;
+    grid-template-columns: 1fr !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    min-height: auto !important;
   }
 
+  /* Fixed Top Header */
+  .mobile-header {
+    display: flex !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 60px !important;
+    background: rgba(11, 15, 23, 0.96) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid var(--border) !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 16px !important;
+    z-index: 1000 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .mobile-header .brand {
+    font-size: 1.3rem !important;
+    margin: 0 !important;
+  }
+
+  .logout-btn-mobile {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--muted) !important;
+    padding: 6px 14px !important;
+    border-radius: 12px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .logout-btn-mobile:hover {
+    background: rgba(244, 63, 94, 0.1) !important;
+    color: #f43f5e !important;
+    border-color: rgba(244, 63, 94, 0.2) !important;
+  }
+
+  /* Fixed Bottom Tab Navigation */
+  .sidebar {
+    position: fixed !important;
+    bottom: 0 !important;
+    top: auto !important; /* Override desktop top: 0 positioning */
+    left: 0 !important;
+    width: 100% !important;
+    height: 70px !important;
+    padding: 0 8px !important;
+    flex-direction: row !important;
+    border-right: none !important;
+    border-top: 1px solid var(--border) !important;
+    background: rgba(11, 15, 23, 0.96) !important;
+    backdrop-filter: blur(20px) !important;
+    z-index: 1000 !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    gap: 0 !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .sidebar-top, 
+  .sidebar-footer {
+    display: none !important; /* Hide brand & user profile on bottom bar */
+  }
+
+  .nav-links {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  .nav-link {
+    flex: 1 !important;
+    min-height: 48px !important;
+    height: 100% !important;
+    padding: 2px 4px !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border: none !important;
+    background: transparent !important;
+    gap: 4px !important;
+  }
+
+  .nav-link.active {
+    background: rgba(255, 159, 67, 0.08) !important;
+    color: #ff9f43 !important;
+  }
+
+  .nav-link__label {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Content & Grids: Stacked layout for readability */
   .content-area {
-    padding: 8px !important;
+    padding: 16px !important;
+    padding-top: 76px !important; /* Ensure content starts below fixed mobile-header */
+    padding-bottom: 86px !important; /* Ensure content is above fixed bottom navigation */
+    overflow-y: auto !important;
+    height: 100% !important;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
   }
-  
+
+  .content-area::-webkit-scrollbar {
+    display: none; /* Hide scrollbar on mobile */
+  }
+
   .page-shell {
-    gap: 8px !important;
+    gap: 16px !important;
   }
-  
+
   .dashboard-hero-grid,
   .dashboard-main-grid,
   .records-grid,
   .contacts-dual-grid,
   .enhanced-trigger-grid {
-    gap: 8px !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
   }
-  
+
   .stats-grid {
-    gap: 4px !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* 2x2 grid for stats */
+    gap: 12px !important;
   }
-  
-  .card {
-    padding: 8px !important;
-    border-radius: 8px !important;
+
+  .stat-card {
+    min-height: 120px !important;
+    padding: 16px !important;
   }
-  
-  .item {
-    padding: 6px !important;
-    border-radius: 8px !important;
-  }
-  
-  .timer-hero {
-    font-size: 1.25rem !important;
-  }
-  
-  .eyebrow {
-    font-size: 0.6rem !important;
-    margin-bottom: 4px !important;
-  }
-  
-  h1, h2, h3 {
-    font-size: 0.9rem !important;
-    margin-bottom: 4px !important;
-  }
-  
-  p, span, div, strong, label, input, select, textarea, button {
-    font-size: 0.7rem !important;
-  }
-  
-  input, select, textarea {
-    padding: 6px 8px !important;
-    border-radius: 8px !important;
-  }
-  
-  button {
-    padding: 6px 10px !important;
-    border-radius: 8px !important;
-    margin-top: 4px !important;
+
+  .stat-card strong {
+    font-size: 1.35rem !important;
   }
 
   .two-col {
-    gap: 6px !important;
+    grid-template-columns: 1fr !important; /* Stack form inputs vertically */
+    gap: 12px !important;
+  }
+
+  /* Form & Input adjustments for touch targets */
+  input, select, textarea {
+    padding: 12px 14px !important;
+    border-radius: 14px !important;
+    font-size: 0.9rem !important;
+  }
+
+  button {
+    padding: 12px 16px !important;
+    border-radius: 14px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .card {
+    padding: 20px !important;
+    border-radius: 18px !important;
+  }
+
+  .timer-hero {
+    font-size: 2.2rem !important;
   }
 }
+
+@media (max-width: 480px) {
+  .content-area {
+    padding: 12px !important;
+  }
+
+  .card {
+    padding: 16px !important;
+    border-radius: 16px !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .stat-card {
+    min-height: 100px !important;
+    padding: 12px !important;
+  }
+
+  .stat-card strong {
+    font-size: 1.15rem !important;
+  }
+  
+  .timer-hero {
+    font-size: 1.85rem !important;
+  }
+}
+
 

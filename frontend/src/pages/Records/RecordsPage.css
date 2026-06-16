@@ -95,6 +95,15 @@
   .search-input {
     max-width: none;
   }
+  .details-textarea {
+    height: 160px !important;
+    min-height: 160px !important;
+    max-height: 200px !important;
+  }
+  .records-tools {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
 }
 
 .details-textarea {

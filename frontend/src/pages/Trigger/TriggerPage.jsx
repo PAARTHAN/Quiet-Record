@@ -4,11 +4,13 @@ import { apiFetch } from "../../api";
 import { formatServerDate } from "../../storage";
 import "./TriggerPage.css";
 
-export default function TriggerPage({ user, setUser, records, contacts, triggerStatus }) {
+export default function TriggerPage({ user, setUser, records, contacts, triggerStatus, refreshStatus }) {
   const [messages, setMessages] = useState({ checkIn: "", trigger: "", warning: "" });
   const [sending, setSending] = useState(false);
   const shownTriggeredAlertRef = useRef(false);
   const shownWarningAlertRef = useRef(false);
+
+
 
   const setAutoMessage = (key, text) => {
     setMessages((prev) => ({ ...prev, [key]: text }));
@@ -17,26 +19,31 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
     }, 5000);
   };
 
+  // Instant notifications based on global countdown
   useEffect(() => {
-    if (triggerStatus?.warning_sent && !shownWarningAlertRef.current) {
-      shownWarningAlertRef.current = true;
-      setAutoMessage("warning", "Warning email sent to the account owner at the 15-second mark.");
-    }
-    if (!triggerStatus?.warning_sent) {
-      shownWarningAlertRef.current = false;
-    }
-  }, [triggerStatus?.warning_sent]);
+    if (!triggerStatus || user.is_triggered || !triggerStatus.is_timer_active) return;
 
-  useEffect(() => {
-    if (triggerStatus?.is_triggered && !shownTriggeredAlertRef.current) {
-      shownTriggeredAlertRef.current = true;
-      setAutoMessage("trigger", "Emergency trigger executed automatically.");
-      alert("Emergency trigger has been executed.");
+    const warningLimit = triggerStatus.warning_threshold_seconds || 15;
+    const currentCountdown = triggerStatus.seconds_until_trigger;
+
+    // Warning Alert
+    if (currentCountdown <= warningLimit && currentCountdown > 0 && !shownWarningAlertRef.current) {
+      shownWarningAlertRef.current = true;
+      setAutoMessage("warning", "⚠️ Warning: Inactivity detected. Emergency protocols initiated.");
     }
-    if (!triggerStatus?.is_triggered) {
+
+    // Trigger Alert
+    if (currentCountdown <= 0 && !shownTriggeredAlertRef.current) {
+      shownTriggeredAlertRef.current = true;
+      setAutoMessage("trigger", "🚨 Emergency trigger executed. Notifications sent to contacts.");
+    }
+
+    // Reset refs if we check in (countdown goes back up)
+    if (currentCountdown > warningLimit) {
+      shownWarningAlertRef.current = false;
       shownTriggeredAlertRef.current = false;
     }
-  }, [triggerStatus?.is_triggered]);
+  }, [triggerStatus?.seconds_until_trigger, user.is_triggered, triggerStatus?.is_timer_active, triggerStatus?.warning_threshold_seconds]);
 
   async function handleCheckIn() {
     try {
@@ -45,10 +52,16 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
       // Clear other messages immediately on check-in
       setMessages((prev) => ({ ...prev, trigger: "", warning: "" }));
       setUser((prev) => ({ ...prev, last_check_in: data.last_check_in, is_triggered: false, warning_sent: false }));
+
+      // FORCE REFRESH: Sync with server ground truth immediately
+      if (typeof refreshStatus === "function") {
+        refreshStatus();
+      }
     } catch (error) {
       setAutoMessage("checkIn", error.message);
     }
   }
+
 
   async function handleTrigger() {
     setSending(true);
@@ -63,31 +76,10 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
     }
   }
 
-  const [localCountdown, setLocalCountdown] = useState(null);
-  const [localSince, setLocalSince] = useState(null);
 
-  // Sync with ground truth from API
-  useEffect(() => {
-    if (triggerStatus?.seconds_until_trigger !== undefined) {
-      setLocalCountdown(triggerStatus.seconds_until_trigger);
-      setLocalSince(triggerStatus.seconds_since_check_in);
-    }
-  }, [triggerStatus?.seconds_until_trigger, triggerStatus?.seconds_since_check_in]);
 
-  // Smooth local interpolator 
-  useEffect(() => {
-    if (localCountdown === null || localCountdown <= 0 || triggerStatus?.is_triggered) return;
-    
-    const timer = setInterval(() => {
-      setLocalCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-      setLocalSince((prev) => (prev !== null ? prev + 1 : prev));
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [localCountdown, triggerStatus?.is_triggered]);
-
-  const progress = triggerStatus && localSince !== null
-    ? Math.min(100, Math.round((localSince / triggerStatus.threshold_seconds) * 100))
+  const progress = triggerStatus && triggerStatus.seconds_since_check_in !== null
+    ? Math.min(100, Math.round((triggerStatus.seconds_since_check_in / triggerStatus.threshold_seconds) * 100))
     : 0;
 
   return (
@@ -100,8 +92,20 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
       <div className="trigger-page-grid enhanced-trigger-grid bg-white w-full">
         <div className="card trigger-timer-card glow-card">
           <span className="eyebrow warm">Live timer</span>
-          <div className="timer-hero">{localCountdown !== null ? `${localCountdown}s` : "--"}</div>
-          <p className="muted">Remaining before the inactivity trigger fires automatically.</p>
+          <div className="timer-hero">
+            {triggerStatus?.is_triggered 
+              ? "TIME OUT" 
+              : !triggerStatus?.is_timer_active 
+                ? "--" 
+                : triggerStatus?.seconds_until_trigger !== undefined ? `${triggerStatus.seconds_until_trigger}s` : "--"}
+          </div>
+          <p className="muted">
+            {triggerStatus?.is_triggered 
+              ? "Trigger has been pulled. Click 'Check in now' to reset the system."
+              : !triggerStatus?.is_timer_active 
+                ? "Click 'Check in now' to activate the safety trigger timer." 
+                : "Remaining before the inactivity trigger fires automatically."}
+          </p>
           <div className="progress-shell">
             <div className="progress-bar" style={{ width: `${progress}%` }} />
           </div>

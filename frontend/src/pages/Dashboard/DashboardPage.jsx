@@ -8,25 +8,7 @@ export default function DashboardPage({ user, records, contacts, triggerStatus }
   const insights = getDashboardInsights(records);
   const recentRecords = [...records].slice(0, 5);
 
-  const [localCountdown, setLocalCountdown] = useState(null);
 
-  // Sync the local countdown with the ground truth whenever the 5s API ping returns
-  useEffect(() => {
-    if (triggerStatus?.seconds_until_trigger !== undefined) {
-      setLocalCountdown(triggerStatus.seconds_until_trigger);
-    }
-  }, [triggerStatus?.seconds_until_trigger]);
-
-  // Interpolate the countdown visually every 1 second
-  useEffect(() => {
-    if (localCountdown === null || localCountdown <= 0 || user.is_triggered) return;
-
-    const timer = setInterval(() => {
-      setLocalCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [localCountdown, user.is_triggered]);
 
   return (
     <>
@@ -46,8 +28,20 @@ export default function DashboardPage({ user, records, contacts, triggerStatus }
 
         <div className="card summary-card">
           <span className="eyebrow">Live countdown</span>
-          <div className="timer-hero">{localCountdown !== null ? `${localCountdown}s` : "--"}</div>
-          <p className="muted">Time remaining before the Trigger gets Pulled.</p>
+          <div className="timer-hero">
+            {triggerStatus?.is_triggered
+              ? "TIME OUT"
+              : !triggerStatus?.is_timer_active 
+                ? "--" 
+                : triggerStatus?.seconds_until_trigger !== undefined ? `${triggerStatus.seconds_until_trigger}s` : "--"}
+          </div>
+          <p className="muted">
+            {triggerStatus?.is_triggered
+              ? "Trigger has been pulled. Check the Trigger page."
+              : !triggerStatus?.is_timer_active 
+                ? "Click 'Check in now' on the Trigger page to activate." 
+                : "Time remaining before the Trigger gets Pulled."}
+          </p>
         </div>
       </div>
 

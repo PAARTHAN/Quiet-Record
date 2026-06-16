@@ -141,6 +141,7 @@ def check_in_me(current_user: User = Depends(get_current_user), db: Session = De
     current_user.last_check_in = utc_naive_now()
     current_user.is_triggered = False
     current_user.warning_sent = False
+    current_user.is_timer_active = True
     db.commit()
     db.refresh(current_user)
     return {

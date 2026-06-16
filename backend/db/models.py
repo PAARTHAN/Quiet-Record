@@ -18,6 +18,7 @@ class User(Base):
     grace_hours = Column(Integer, default=24, nullable=False)
     is_triggered = Column(Boolean, default=False, nullable=False)
     warning_sent = Column(Boolean, default=False, nullable=False)
+    is_timer_active = Column(Boolean, default=False, nullable=False)
     emergency_package = Column(Text, nullable=True)
     last_message = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

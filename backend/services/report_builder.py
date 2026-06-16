@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from db.models import Record, TrustedContact, User
 from core.utils import to_ist_string, utc_now
+from core.encryption import decrypt_detail
 
 def get_dashboard_intelligence(records: list[Record]) -> dict:
     def safe_amount(value) -> float:
@@ -15,18 +16,21 @@ def get_dashboard_intelligence(records: list[Record]) -> dict:
     highest_asset = None
 
     for record in records:
-        amount = safe_amount(record.amount)
+        decrypted_amount = decrypt_detail(record.amount)
+        amount = safe_amount(decrypted_amount)
         category = (record.category or "Other").lower()
+        decrypted_title = decrypt_detail(record.title)
+        decrypted_owner = decrypt_detail(record.owner)
 
         if category in ["debt", "bill"]:
             if highest_debt is None or amount > highest_debt["amount"]:
-                highest_debt = {"title": record.title, "amount": amount, "owner": record.owner}
+                highest_debt = {"title": decrypted_title, "amount": amount, "owner": decrypted_owner}
         elif category in ["money owed to me", "lent", "owed", "receivable"]:
             if highest_owed is None or amount > highest_owed["amount"]:
-                highest_owed = {"title": record.title, "amount": amount, "owner": record.owner}
+                highest_owed = {"title": decrypted_title, "amount": amount, "owner": decrypted_owner}
         else:
             if highest_asset is None or amount > highest_asset["amount"]:
-                highest_asset = {"title": record.title, "amount": amount, "owner": record.owner}
+                highest_asset = {"title": decrypted_title, "amount": amount, "owner": decrypted_owner}
 
     return {
         "highest_debt": highest_debt,
@@ -55,7 +59,8 @@ def build_emergency_report(user: User, contacts: list[TrustedContact], db: Sessi
     for r in records:
         category = (r.category or "Other").strip()
         grouped.setdefault(category, []).append(r)
-        amount = safe_amount(r.amount)
+        decrypted_amount = decrypt_detail(r.amount)
+        amount = safe_amount(decrypted_amount)
         category_lower = category.lower()
         if category_lower in ["debt", "bill"]:
             total_debt += amount
@@ -141,16 +146,22 @@ def build_emergency_report(user: User, contacts: list[TrustedContact], db: Sessi
     sections.append("=" * 88)
     if records:
         for category, items in grouped.items():
-            category_total = sum(safe_amount(item.amount) for item in items)
+            category_total = sum(safe_amount(decrypt_detail(item.amount)) for item in items)
             sections.append(f"Category               : {category}")
             sections.append(f"Category Total         : {money(category_total)}")
             sections.append("-" * 88)
             for index, item in enumerate(items, start=1):
+                decrypted_title = decrypt_detail(item.title)
+                decrypted_amount = decrypt_detail(item.amount)
+                decrypted_owner = decrypt_detail(item.owner)
+                
                 sections.append(f"Entry {index}")
-                sections.append(f"  Title / Item Name    : {item.title or 'Not provided'}")
-                sections.append(f"  Amount               : {money(safe_amount(item.amount))}")
-                sections.append(f"  Person / Institution : {item.owner or 'Not provided'}")
-                sections.append(f"  Details / Notes      : {item.details or 'No details provided'}")
+                sections.append(f"  Title / Item Name    : {decrypted_title or 'Not provided'}")
+                sections.append(f"  Amount               : {money(safe_amount(decrypted_amount))}")
+                sections.append(f"  Person / Institution : {decrypted_owner or 'Not provided'}")
+                
+                decrypted_details = decrypt_detail(item.details)
+                sections.append(f"  Details / Notes      : {decrypted_details or 'No details provided'}")
                 sections.append("")
             sections.append("=" * 88)
     else:
@@ -166,3 +177,30 @@ def build_emergency_report(user: User, contacts: list[TrustedContact], db: Sessi
     sections.append("I loved you guys always❣️, sorry for leaving y'all 🥺")
 
     return "\n".join(sections)
+
+
+def build_sms_summary(user: User, db: Session, recipient_name: str) -> str:
+    records = db.query(Record).filter(Record.user_id == user.id).all()
+
+    def safe_amount(value) -> float:
+        try:
+            return float(value or 0)
+        except Exception:
+            return 0.0
+
+    total_debt = sum(safe_amount(decrypt_detail(r.amount)) for r in records if (r.category or "").lower() in ["debt", "bill"])
+    total_assets = sum(safe_amount(decrypt_detail(r.amount)) for r in records if (r.category or "").lower() not in ["debt", "bill", "money owed to me", "lent", "owed", "receivable"])
+
+    # Personalize and truncate last message to keep SMS short
+    raw_message = user.last_message.strip() if user.last_message else "No message."
+    short_message = (raw_message[:80] + "...") if len(raw_message) > 80 else raw_message
+
+    summary = [
+        f"Dear {recipient_name},",
+        f"🚨 EMERGENCY for {user.name}:",
+        f"Debt: ₹{total_debt:,.0f}",
+        f"Assets: ₹{total_assets:,.0f}",
+        f"Message: {short_message}",
+        "Full report in your email. - Quiet Record"
+    ]
+    return "\n".join(summary)

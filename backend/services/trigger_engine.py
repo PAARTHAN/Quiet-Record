@@ -8,7 +8,8 @@ from db.models import Record, TrustedContact, User
 from core.config import WARNING_THRESHOLD_SECONDS, TRIGGER_THRESHOLD_SECONDS, AUTOTRIGGER_POLL_SECONDS
 from core.utils import ensure_utc, to_ist_string, utc_now, as_api_datetime_string
 from services.email_service import send_emergency_email, send_warning_email
-from services.report_builder import build_emergency_report
+from services.report_builder import build_emergency_report, build_sms_summary
+from services.sms_service import send_emergency_sms
 
 # Use the same OUTBOX setup
 OUTBOX_DIR = Path(__file__).resolve().parent.parent / "outbox"
@@ -66,7 +67,23 @@ def run_release(user: User, db: Session) -> dict:
         encoding="utf-8",
     )
 
+    # --- SMS HANDLING ---
+    sms_results = []
+    for contact in contacts:
+        if contact.phone and contact.phone.strip():
+            # Generate personalized summary for this specific contact
+            personalized_sms = build_sms_summary(user, db, contact.name)
+            sent_sms, sms_msg = send_emergency_sms(contact.phone, personalized_sms)
+            sms_results.append(f"{contact.name} ({contact.phone}): {sms_msg}")
+    
+    # Update preview file with SMS results if any
+    if sms_results:
+        with open(preview_path, "a", encoding="utf-8") as f:
+            f.write("\n\n" + "="*88 + "\nSMS DELIVERY RESULTS\n" + "="*88 + "\n")
+            f.write("\n".join(sms_results))
+
     user.is_triggered = True
+    user.is_timer_active = False
     db.commit()
     db.refresh(user)
 
@@ -77,10 +94,14 @@ def run_release(user: User, db: Session) -> dict:
             f"Emergency release prepared, but email was not sent because {delivery_message}. "
             f"A preview file was saved to backend/outbox."
         )
+    
+    if sms_results:
+        message += f" SMS notifications attempted for {len(sms_results)} contact(s)."
 
     return {
         "message": message,
         "trusted_contacts": recipients,
+        "sms_notified": [c.phone for c in contacts if c.phone],
         "preview_file": preview_path.name,
         "last_check_in": as_api_datetime_string(user.last_check_in),
         "is_triggered": user.is_triggered,
@@ -92,6 +113,10 @@ def check_auto_triggers_once():
     try:
         users = db.query(User).all()
         for user in users:
+            # ONLY evaluate triggers if the timer is explicitly active
+            if not user.is_timer_active:
+                continue
+
             records_exist = db.query(Record).filter(Record.user_id == user.id).first() is not None
             if not records_exist:
                 continue

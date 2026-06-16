@@ -93,8 +93,24 @@ export default function ContactsPage({ user, contacts, loadContacts }) {
             </div>
             <div className="two-col">
               <div className="input-group">
-                <label>Phone (Optional)</label>
-                <input placeholder="10 Digit Number" inputMode="numeric" pattern="[0-9]{10}" maxLength="10" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })} />
+                <label>Phone (with Country Code)</label>
+                <input 
+                  placeholder="+91 98765 43210" 
+                  inputMode="tel" 
+                  pattern="\+[1-9]\d{1,3}\d{10}" 
+                  title="Include + followed by country code and 10-digit number (e.g. +919876543210)"
+                  value={form.phone} 
+                  onChange={(e) => {
+                    let val = e.target.value;
+                    if (val.length > 0 && !val.startsWith('+')) val = '+' + val;
+                    // Allow only '+' at start and digits after
+                    const sanitized = val.startsWith('+') 
+                      ? '+' + val.slice(1).replace(/\D/g, "") 
+                      : val.replace(/\D/g, "");
+                    setForm({ ...form, phone: sanitized.slice(0, 15) });
+                  }} 
+                  required
+                />
               </div>
               <div className="input-group">
                 <label>Relationship</label>

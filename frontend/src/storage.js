@@ -100,3 +100,34 @@ export function getDashboardInsights(records) {
 
   return { highestDebt, highestOwed, strongestAsset };
 }
+
+export function formatDuration(seconds) {
+  if (seconds === undefined || seconds === null) return "--";
+  if (seconds <= 0) return "0s";
+
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  if (secs > 0 || parts.length === 0) parts.push(`${secs}s`);
+
+  // If we have days, only show days & hours for clean display.
+  // Otherwise, show hours & minutes, or minutes & seconds.
+  return parts.slice(0, 2).join(" ");
+}
+
+export function formatThreshold(seconds) {
+  if (seconds === undefined || seconds === null) return "--";
+  const days = seconds / 86400;
+  if (days === 90) return "3 months";
+  if (days === 60) return "2 months";
+  if (days === 30) return "1 month";
+  if (days >= 1 && days % 1 === 0) return `${days} days`;
+  return `${seconds}s`;
+}
+

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
-import { calculateBuckets, currencyTotal, formatCurrency, formatServerDate, getDashboardInsights } from "../../storage";
+import { calculateBuckets, currencyTotal, formatCurrency, formatServerDate, getDashboardInsights, formatDuration, formatThreshold } from "../../storage";
 import "./DashboardPage.css";
 
 export default function DashboardPage({ user, records, contacts, triggerStatus }) {
@@ -33,7 +33,7 @@ export default function DashboardPage({ user, records, contacts, triggerStatus }
               ? "TIME OUT"
               : !triggerStatus?.is_timer_active 
                 ? "--" 
-                : triggerStatus?.seconds_until_trigger !== undefined ? `${triggerStatus.seconds_until_trigger}s` : "--"}
+                : triggerStatus?.seconds_until_trigger !== undefined ? formatDuration(triggerStatus.seconds_until_trigger) : "--"}
           </div>
           <p className="muted">
             {triggerStatus?.is_triggered
@@ -121,9 +121,9 @@ export default function DashboardPage({ user, records, contacts, triggerStatus }
             <h2>Status overview</h2>
             <div className="list">
               <div className="item row-between"><span>Last check-in</span><strong>{formatServerDate(user.last_check_in)}</strong></div>
-              <div className="item row-between"><span>Warning mail</span><strong>{triggerStatus?.warning_sent ? "Sent at 15s" : `${triggerStatus?.seconds_until_warning ?? '--'}s left`}</strong></div>
-              <div className="item row-between"><span>Final trigger</span><strong>{triggerStatus ? `${triggerStatus.threshold_seconds}s` : "30s"}</strong></div>
-              <div className="item row-between"><span>Seconds since check-in</span><strong>{triggerStatus ? triggerStatus.seconds_since_check_in : "--"}</strong></div>
+              <div className="item row-between"><span>Warning mail</span><strong>{triggerStatus?.warning_sent ? "Sent" : triggerStatus?.seconds_until_warning !== undefined ? `${formatDuration(triggerStatus.seconds_until_warning)} left` : "--"}</strong></div>
+              <div className="item row-between"><span>Final trigger</span><strong>{triggerStatus ? formatThreshold(triggerStatus.threshold_seconds) : "3 months"}</strong></div>
+              <div className="item row-between"><span>Inactivity duration</span><strong>{triggerStatus ? formatDuration(triggerStatus.seconds_since_check_in) : "--"}</strong></div>
               <div className="item row-between"><span>Trusted contacts</span><strong>{contacts.length}</strong></div>
               <div className="item row-between"><span>Trigger state</span><strong>{user.is_triggered ? "Triggered" : "Monitoring"}</strong></div>
             </div>

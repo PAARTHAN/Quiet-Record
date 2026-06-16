@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import { apiFetch } from "../../api";
-import { formatServerDate } from "../../storage";
+import { formatServerDate, formatDuration, formatThreshold } from "../../storage";
 import "./TriggerPage.css";
 
 export default function TriggerPage({ user, setUser, records, contacts, triggerStatus, refreshStatus }) {
@@ -97,7 +97,7 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
               ? "TIME OUT" 
               : !triggerStatus?.is_timer_active 
                 ? "--" 
-                : triggerStatus?.seconds_until_trigger !== undefined ? `${triggerStatus.seconds_until_trigger}s` : "--"}
+                : triggerStatus?.seconds_until_trigger !== undefined ? formatDuration(triggerStatus.seconds_until_trigger) : "--"}
           </div>
           <p className="muted">
             {triggerStatus?.is_triggered 
@@ -110,8 +110,8 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
             <div className="progress-bar" style={{ width: `${progress}%` }} />
           </div>
           <div className="row-between top-gap wrap-mobile">
-            <span className="pill-muted">Warning: {triggerStatus ? `${triggerStatus.warning_threshold_seconds}s` : "15s"}</span>
-            <span className="pill-muted">Final trigger: {triggerStatus ? `${triggerStatus.threshold_seconds}s` : "30s"}</span>
+            <span className="pill-muted">Warning: {triggerStatus ? formatThreshold(triggerStatus.warning_threshold_seconds) : "2 months"}</span>
+            <span className="pill-muted">Final trigger: {triggerStatus ? formatThreshold(triggerStatus.threshold_seconds) : "3 months"}</span>
             <span className="pill-muted">Records ready: {records.length}</span>
           </div>
         </div>
@@ -142,8 +142,8 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
         <div className="list">
           <div className="item row-between"><span>Last check-in</span><strong>{triggerStatus?.last_check_in_display || formatServerDate(user.last_check_in)}</strong></div>
           <div className="item row-between"><span>Server time</span><strong>{triggerStatus?.server_time_display || "Loading..."}</strong></div>
-          <div className="item row-between"><span>Seconds since check-in</span><strong>{triggerStatus ? triggerStatus.seconds_since_check_in : "--"}</strong></div>
-          <div className="item row-between"><span>Warning mail state</span><strong>{triggerStatus?.warning_sent ? "Sent" : `${triggerStatus?.seconds_until_warning ?? '--'}s left`}</strong></div>
+          <div className="item row-between"><span>Inactivity duration</span><strong>{triggerStatus && triggerStatus.seconds_since_check_in !== null ? formatDuration(triggerStatus.seconds_since_check_in) : "--"}</strong></div>
+          <div className="item row-between"><span>Warning mail state</span><strong>{triggerStatus?.warning_sent ? "Sent" : triggerStatus?.seconds_until_warning !== undefined ? `${formatDuration(triggerStatus.seconds_until_warning)} left` : "--"}</strong></div>
           <div className="item row-between"><span>Final trigger state</span><strong>{user.is_triggered ? "Triggered" : "Monitoring"}</strong></div>
           <div className="item row-between"><span>Contacts available</span><strong>{contacts.length}</strong></div>
         </div>

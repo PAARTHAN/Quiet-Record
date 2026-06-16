@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { apiFetch } from "../../api";
 import "./AuthPage.css";
@@ -13,6 +13,12 @@ export default function ResetPasswordPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!token) {
+      setMessage("Missing or invalid reset token. Please use the password reset link sent to your email.");
+    }
+  }, [token]);
 
   async function handleSubmit(e) {
     e.preventDefault();

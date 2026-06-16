@@ -407,11 +407,263 @@ button.danger {
   line-height: 1.5;
 }
 
-/* ==========================================================================
-   GLOBAL MEDIA QUERIES
-   ========================================================================== */
 @media (max-width: 1180px) {
   .sticky-card {
     position: static;
   }
 }
+
+/* ==========================================================================
+   MOBILE & TABLET VIEWPORTS: DESKTOP SIMULATION (SCALED DOWN)
+   ========================================================================== */
+@media (max-width: 900px) {
+  /* Layout: Shell & Sidebar scale down but stay side-by-side */
+  .shell {
+    grid-template-columns: 160px minmax(0, 1fr) !important;
+  }
+  
+  .sidebar {
+    width: 160px !important;
+    padding: 16px 12px !important;
+    gap: 14px !important;
+    position: sticky !important;
+    height: 100vh !important;
+    border-right: 1px solid var(--border) !important;
+    border-bottom: none !important;
+  }
+  
+  .brand {
+    font-size: 1.1rem !important;
+  }
+  
+  .nav-links {
+    gap: 10px !important;
+  }
+  
+  .nav-link {
+    min-height: 38px !important;
+    padding: 0 10px !important;
+    border-radius: 12px !important;
+  }
+  
+  .nav-link__label {
+    font-size: 0.8rem !important;
+  }
+  
+  .sidebar-footer {
+    display: grid !important;
+    gap: 10px !important;
+  }
+  
+  .user-pill {
+    padding: 12px !important;
+    border-radius: 12px !important;
+  }
+  
+  .user-pill__name {
+    font-size: 1rem !important;
+  }
+  
+  button.secondary.full-width {
+    padding: 8px 12px !important;
+    font-size: 0.8rem !important;
+    border-radius: 12px !important;
+  }
+
+  /* Content area */
+  .content-area {
+    padding: 14px !important;
+  }
+  
+  .page-shell {
+    gap: 14px !important;
+  }
+
+  /* Keep all grids side-by-side (2-column or 4-column) */
+  .dashboard-hero-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) !important;
+    gap: 14px !important;
+  }
+  
+  .stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  
+  .dashboard-main-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) !important;
+    gap: 14px !important;
+  }
+  
+  .records-grid, 
+  .contacts-dual-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr) !important;
+    gap: 14px !important;
+  }
+  
+  .enhanced-trigger-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) !important;
+    gap: 14px !important;
+  }
+  
+  .two-col {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  /* Scaled-down general UI elements */
+  .card {
+    padding: 14px !important;
+    border-radius: 14px !important;
+  }
+  
+  .item {
+    padding: 10px !important;
+    border-radius: 12px !important;
+  }
+  
+  .timer-hero {
+    font-size: 1.8rem !important;
+  }
+  
+  .eyebrow {
+    font-size: 0.75rem !important;
+    margin-bottom: 6px !important;
+  }
+  
+  h1, h2, h3 {
+    font-size: 1.1rem !important;
+    margin-bottom: 6px !important;
+  }
+  
+  p, span, div, strong, label, input, select, textarea, button {
+    font-size: 0.8rem !important;
+  }
+  
+  input, select, textarea {
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+  }
+  
+  button {
+    padding: 8px 12px !important;
+    border-radius: 10px !important;
+    margin-top: 5px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  /* Ultra-compact side-by-side mode for small screens (375px - 500px) */
+  .shell {
+    grid-template-columns: 110px minmax(0, 1fr) !important;
+  }
+  
+  .sidebar {
+    width: 110px !important;
+    padding: 12px 6px !important;
+    gap: 8px !important;
+  }
+  
+  .brand {
+    font-size: 0.85rem !important;
+  }
+  
+  .nav-links {
+    gap: 6px !important;
+  }
+  
+  .nav-link {
+    min-height: 32px !important;
+    padding: 0 6px !important;
+    border-radius: 8px !important;
+  }
+  
+  .nav-link__label {
+    font-size: 0.65rem !important;
+  }
+  
+  .user-pill {
+    padding: 6px !important;
+    border-radius: 6px !important;
+  }
+  
+  .user-pill__name {
+    font-size: 0.75rem !important;
+  }
+  
+  button.secondary.full-width {
+    padding: 6px 8px !important;
+    font-size: 0.65rem !important;
+    border-radius: 8px !important;
+  }
+
+  .content-area {
+    padding: 8px !important;
+  }
+  
+  .page-shell {
+    gap: 8px !important;
+  }
+  
+  .dashboard-hero-grid,
+  .dashboard-main-grid,
+  .records-grid,
+  .contacts-dual-grid,
+  .enhanced-trigger-grid {
+    gap: 8px !important;
+  }
+  
+  .stats-grid {
+    gap: 4px !important;
+  }
+  
+  .card {
+    padding: 8px !important;
+    border-radius: 8px !important;
+  }
+  
+  .item {
+    padding: 6px !important;
+    border-radius: 8px !important;
+  }
+  
+  .timer-hero {
+    font-size: 1.25rem !important;
+  }
+  
+  .eyebrow {
+    font-size: 0.6rem !important;
+    margin-bottom: 4px !important;
+  }
+  
+  h1, h2, h3 {
+    font-size: 0.9rem !important;
+    margin-bottom: 4px !important;
+  }
+  
+  p, span, div, strong, label, input, select, textarea, button {
+    font-size: 0.7rem !important;
+  }
+  
+  input, select, textarea {
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
+  }
+  
+  button {
+    padding: 6px 10px !important;
+    border-radius: 8px !important;
+    margin-top: 4px !important;
+  }
+
+  .two-col {
+    gap: 6px !important;
+  }
+}
+

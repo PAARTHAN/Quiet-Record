@@ -46,7 +46,7 @@ def send_emergency_email(
             filename=attachment_name,
         )
 
-    with smtplib.SMTP(smtp_host, int(smtp_port)) as server:
+    with smtplib.SMTP(smtp_host, int(smtp_port), timeout=15) as server:
         if use_tls:
             server.starttls()
         if smtp_username and smtp_password:

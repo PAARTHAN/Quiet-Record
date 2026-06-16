@@ -1,5 +1,9 @@
 import os
 import smtplib
+import json
+import base64
+import urllib.request
+import urllib.error
 from email.message import EmailMessage
 
 from db.models import User
@@ -19,6 +23,46 @@ def send_emergency_email(
         if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
             val = val[1:-1].strip()
         return val
+
+    resend_api_key = clean_env_var(os.getenv("RESEND_API_KEY"))
+    resend_from = clean_env_var(os.getenv("RESEND_FROM_EMAIL")) or "emergency@galaxio.space"
+
+    if resend_api_key:
+        # Send via Resend HTTP API (Port 443, never blocked by Render)
+        url = "https://api.resend.com/emails"
+        headers = {
+            "Authorization": f"Bearer {resend_api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "from": resend_from,
+            "to": recipients,
+            "subject": subject,
+            "text": body,
+        }
+        if attachment_name and attachment_content:
+            content_b64 = base64.b64encode(attachment_content.encode("utf-8")).decode("utf-8")
+            payload["attachments"] = [
+                {
+                    "filename": attachment_name,
+                    "content": content_b64,
+                }
+            ]
+        
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers=headers,
+            method="POST"
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as response:
+                return True, "Emails sent successfully via Resend API"
+        except urllib.error.HTTPError as e:
+            err_msg = e.read().decode("utf-8")
+            return False, f"Resend API error: {e.code} - {err_msg}"
+        except Exception as e:
+            return False, f"Resend request failed: {str(e)}"
 
     smtp_host = clean_env_var(os.getenv("SMTP_HOST"))
     smtp_port = clean_env_var(os.getenv("SMTP_PORT"))

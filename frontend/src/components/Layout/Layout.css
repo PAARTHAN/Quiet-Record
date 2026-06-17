@@ -33,17 +33,18 @@
 .death-title {
   font-family: var(--font-accent);
   font-weight: 700;
-  font-size: 1.65rem; /* Slightly reduced to fit beautifully on all viewports */
+  font-size: 2.35rem; /* Majestic prominent logo size */
   background: linear-gradient(135deg, #c084fc, #ff4b91, #00d2ff); /* cosmic violet to pink to cyan */
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   text-align: center;
   filter: drop-shadow(0 4px 12px rgba(157, 78, 221, 0.35));
   margin: 0 auto;
   white-space: nowrap; /* Prevent logo wrapping */
+  display: block;
 }
 
 .sidebar-top {
@@ -99,6 +100,103 @@
   font-weight: 800;
 }
 
+.sidebar-decor-card {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(157, 78, 221, 0.05), rgba(0, 210, 255, 0.02));
+  border: 1px solid rgba(157, 78, 221, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-decor-card::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 210, 255, 0.15) 0%, transparent 70%);
+  filter: blur(15px);
+  pointer-events: none;
+}
+
+.decor-galaxy {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 4px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.decor-core {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-2); /* Pink */
+  box-shadow: 0 0 12px var(--accent-2);
+}
+
+.decor-ring {
+  position: absolute;
+  width: 32px;
+  height: 12px;
+  border: 1px solid rgba(0, 210, 255, 0.5);
+  border-radius: 50%;
+  transform: rotate(-15deg);
+  animation: rotateDecorRing 8s linear infinite;
+}
+
+@keyframes rotateDecorRing {
+  from { transform: rotate(-15deg) rotateZ(0deg); }
+  to { transform: rotate(-15deg) rotateZ(360deg); }
+}
+
+.decor-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+  animation: pulseDecorDot 2s infinite alternate ease-in-out;
+}
+
+@keyframes pulseDecorDot {
+  0% { transform: scale(0.85); opacity: 0.7; box-shadow: 0 0 4px var(--success); }
+  100% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px var(--success); }
+}
+
+.decor-status-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--success);
+}
+
+.decor-text {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  margin: 0;
+}
+
 .sidebar-footer {
   margin-top: auto;
   display: grid;
@@ -118,8 +216,8 @@
 
 .user-pill__name {
   color: var(--accent-2);
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.45rem !important;
+  font-weight: 800 !important;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -129,9 +227,11 @@
 
 .user-pill .muted {
   text-align: center;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .content-area {

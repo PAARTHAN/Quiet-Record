@@ -770,11 +770,19 @@ button.danger:hover {
 
 @media (max-width: 800px) {
   /* Layout structure */
+  body:has(.shell) {
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+
   .shell {
     grid-template-columns: 1fr !important;
     height: 100vh !important;
     overflow: hidden !important;
     min-height: auto !important;
+    max-width: 100vw !important;
   }
 
   /* Fixed Top Header */
@@ -890,6 +898,9 @@ button.danger:hover {
     padding-bottom: 86px !important; /* Ensure content is above fixed bottom navigation */
     overflow-y: auto !important;
     height: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch; /* Smooth iOS momentum scrolling */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE/Edge */
   }

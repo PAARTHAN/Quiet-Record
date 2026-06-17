@@ -11,12 +11,12 @@ def send_emergency_sms(to_number: str, content: str) -> tuple[bool, str]:
     try:
         client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         # Twilio requires E.164 format (e.g., +91...)
-        # We assume the user has entered it correctly or we could do some basic cleanup here
         clean_number = to_number.strip()
         if not clean_number.startswith('+'):
-            # Default to +91 if code is missing, or just let Twilio error out if invalid
-            # For robustness, we just use what's provided but ensuring it's stripped
-            pass
+            if len(clean_number) == 10:
+                clean_number = "+91" + clean_number
+            else:
+                clean_number = "+" + clean_number
 
         message = client.messages.create(
             body=content,

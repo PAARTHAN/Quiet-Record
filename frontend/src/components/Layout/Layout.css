@@ -8,14 +8,14 @@
   position: sticky;
   top: 0;
   height: 100vh;
-  padding: 24px 18px;
-  border-right: 1px solid var(--border);
-  background: rgba(6, 7, 20, 0.35); /* Translucent space glass */
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
+  padding: 32px 20px;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(4, 5, 12, 0.3); /* Transparent space sidebar */
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 24px;
 }
 
 .brand {
@@ -33,19 +33,23 @@
 .death-title {
   font-family: var(--font-accent);
   font-weight: 700;
-  font-size: 1.85rem; /* Bigger logo */
+  font-size: 1.65rem; /* Slightly reduced to fit beautifully on all viewports */
   background: linear-gradient(135deg, #c084fc, #ff4b91, #00d2ff); /* cosmic violet to pink to cyan */
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  text-align: center;
+  filter: drop-shadow(0 4px 12px rgba(157, 78, 221, 0.35));
+  margin: 0 auto;
+  white-space: nowrap; /* Prevent logo wrapping */
 }
 
 .sidebar-top {
-  padding: 12px 0 20px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  margin-bottom: 10px;
+  padding: 0 0 24px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 8px;
   text-align: center;
 }
 
@@ -102,25 +106,32 @@
 }
 
 .user-pill {
-  display: grid;
-  justify-content: center;
-  gap: 8px;
-  padding: 20px 24px;
-  border-radius: 14px;
-  background: rgba(13, 17, 34, 0.25);
-  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .user-pill__name {
-  align-items: center;
-  color: var(--accent-2); /* nebula pink */
-  font-size: 1.5rem;
+  color: var(--accent-2);
+  font-size: 1.2rem;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: left;
+  text-align: center;
+}
+
+.user-pill .muted {
+  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .content-area {

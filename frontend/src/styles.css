@@ -795,9 +795,11 @@ button.danger:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
   }
 
-  .mobile-header .brand {
-    font-size: 1.3rem !important;
+  .mobile-header .death-title {
+    font-size: 1.35rem !important;
+    letter-spacing: 0.08em !important;
     margin: 0 !important;
+    white-space: nowrap !important;
   }
 
   .logout-btn-mobile {

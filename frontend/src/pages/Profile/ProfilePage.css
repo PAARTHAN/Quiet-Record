@@ -21,6 +21,15 @@
   backdrop-filter: blur(8px);
 }
 
+.mini-stat strong {
+  font-size: clamp(1.05rem, 2.2vw, 1.45rem) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  word-break: normal !important;
+  display: block !important;
+}
+
 /* --- Added Semantic Colors & Tints --- */
 .tint-debt {
   background: linear-gradient(145deg, rgba(255, 107, 107, 0.08), rgba(255, 107, 107, 0.02));

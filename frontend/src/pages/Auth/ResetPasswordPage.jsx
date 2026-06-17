@@ -50,10 +50,9 @@ export default function ResetPasswordPage() {
       setLoading(false);
     }
   }
-
   return (
     <div className="auth-page reset-container">
-      <div className="auth-hero card glass">
+      <div className="auth-hero">
         <span className="eyebrow">Secure Security Update 🔒</span>
         <h1 className="death-title">Galaxio</h1>
         <p>

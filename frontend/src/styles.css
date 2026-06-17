@@ -843,8 +843,9 @@ button.danger:hover {
   }
 
   .sidebar-top, 
-  .sidebar-footer {
-    display: none !important; /* Hide brand & user profile on bottom bar */
+  .sidebar-footer,
+  .sidebar-decor-card {
+    display: none !important;
   }
 
   .nav-links {

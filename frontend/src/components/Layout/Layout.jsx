@@ -94,6 +94,20 @@ export default function Layout({ user, onLogout, triggerStatus, children }) {
           ))}
         </nav>
 
+        <div className="sidebar-decor-card">
+          <div className="decor-galaxy">
+            <div className="decor-core"></div>
+            <div className="decor-ring"></div>
+          </div>
+          <div className="decor-status">
+            <span className="pulse-dot"></span>
+            <span className="decor-status-label">Legacy Monitor Active</span>
+          </div>
+          <p className="decor-text">
+            Your secure digital vault is actively monitored and protected under high-grade cosmic encryption.
+          </p>
+        </div>
+
         <div className="sidebar-footer">
           <div className="user-pill">
             <div className="muted">Signed in as</div>

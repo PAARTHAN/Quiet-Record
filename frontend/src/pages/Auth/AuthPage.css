@@ -131,10 +131,81 @@
   align-self: center;
   padding: 40px;
   border-radius: 28px;
-  background: rgba(10, 11, 30, 0.35);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(20px);
-  box-shadow: var(--shadow);
+  background: rgba(8, 6, 20, 0.5) !important;
+  border: 1px solid rgba(157, 78, 221, 0.25) !important;
+  backdrop-filter: blur(24px) !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 
+              0 0 40px rgba(157, 78, 221, 0.15) !important;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(157, 78, 221, 0.08) 25%,
+    rgba(255, 75, 145, 0.08) 50%,
+    rgba(0, 210, 255, 0.08) 75%,
+    transparent 100%
+  );
+  animation: rotateConicGlow 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes rotateConicGlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.auth-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-card:hover {
+  border-color: rgba(255, 75, 145, 0.4) !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7), 
+              0 0 50px rgba(255, 75, 145, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+.auth-card input {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(157, 78, 221, 0.15) !important;
+  color: #ffffff !important;
+  padding: 14px 18px !important;
+  border-radius: 16px !important;
+  font-size: 1.05rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.auth-card input:focus {
+  border-color: rgba(0, 210, 255, 0.6) !important;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.auth-card button[type="submit"] {
+  height: 52px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #9d4edd, #ff4b91) !important;
+  box-shadow: 0 8px 25px rgba(157, 78, 221, 0.35) !important;
+  transition: all 0.3s ease !important;
+}
+
+.auth-card button[type="submit"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 30px rgba(157, 78, 221, 0.5), 0 0 15px rgba(255, 75, 145, 0.3) !important;
 }
 
 .auth-tabs {

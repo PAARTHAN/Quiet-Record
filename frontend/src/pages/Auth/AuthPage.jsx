@@ -74,7 +74,7 @@ export default function AuthPage({ onLogin }) {
 
   return (
     <div className="auth-page">
-      <div className="auth-hero card glass">
+      <div className="auth-hero">
         <div className="cosmic-visualizer">
           <div className="cosmic-core"></div>
           <div className="cosmic-orbit orbit-1"><div className="planet planet-1"></div></div>

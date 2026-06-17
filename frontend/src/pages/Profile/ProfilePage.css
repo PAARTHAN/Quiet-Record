@@ -17,7 +17,8 @@
   padding: 16px;
   border-radius: 16px;
   border: 1px solid var(--border);
-  background: #0f1624;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
 }
 
 /* --- Added Semantic Colors & Tints --- */
@@ -28,10 +29,10 @@
 .text-debt { color: #ff8b8b; }
 
 .tint-lent {
-  background: linear-gradient(145deg, rgba(255, 180, 84, 0.08), rgba(255, 180, 84, 0.02));
-  border-color: rgba(255, 180, 84, 0.2);
+  background: linear-gradient(145deg, rgba(0, 210, 255, 0.08), rgba(0, 210, 255, 0.02));
+  border-color: rgba(0, 210, 255, 0.2);
 }
-.text-lent { color: #ffd58f; }
+.text-lent { color: #8ee5f0; }
 
 .tint-asset {
   background: linear-gradient(145deg, rgba(53, 196, 139, 0.08), rgba(53, 196, 139, 0.02));
@@ -49,8 +50,8 @@
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 .outline-item:hover {
-  background: rgba(255, 255, 255, 0.02);
-  border-color: rgba(255, 180, 84, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(157, 78, 221, 0.45);
 }
 
 .row-align {

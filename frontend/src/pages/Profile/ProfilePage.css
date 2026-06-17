@@ -82,15 +82,15 @@
 .emerald-text { color: #8ef0c9; font-weight: 700; }
 .flex-column { display: flex; flex-direction: column; }
 .flex-grow { flex-grow: 1; margin-top: auto; }
-
 @media (max-width: 1180px) {
   .profile-shell-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 800px) {
   .triple-summary {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
 }

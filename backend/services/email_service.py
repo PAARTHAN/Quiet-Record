@@ -102,10 +102,10 @@ def send_emergency_email(
 
 
 def send_warning_email(user: User) -> tuple[bool, str]:
-    subject = f"Death Note inactivity warning for {user.name}"
+    subject = f"Galaxio inactivity warning for {user.name}"
     body = (
         f"Hello {user.name},\n\n"
-        f"We noticed that you have not checked in to Death Note application recently and we're not sure whether you're okay!.\n"
+        f"We noticed that you have not checked in to the Galaxio application recently and we're not sure whether you're okay!.\n"
         f"This is a warning message sent to remind you to login and check-in.\n\n"
         f"If you are safe, please open the app and use the check-in action before the final trigger.\n\n"
         f"Warning generated at: {to_ist_string(utc_now())}\n"
@@ -118,14 +118,14 @@ def send_password_reset_email(email: str, token: str) -> tuple[bool, str]:
     base_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
     reset_link = f"{base_url}/reset-password?token={token}"
     
-    subject = "Reset your Quiet Record password"
+    subject = "Reset your Galaxio password"
     body = (
         f"Hi there,\n\n"
-        f"You requested to reset your password for your Quiet Record account.\n"
+        f"You requested to reset your password for your Galaxio account.\n"
         f"Click the link below to set a new password. This link will expire in 15 minutes.\n\n"
         f"{reset_link}\n\n"
         f"If you didn't request this, you can safely ignore this email.\n\n"
         f"Best regards,\n"
-        f"The Quiet Record Team"
+        f"The Galaxio Team"
     )
     return send_emergency_email([email], subject, body)

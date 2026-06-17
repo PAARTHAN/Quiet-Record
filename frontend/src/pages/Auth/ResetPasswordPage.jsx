@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
     <div className="auth-page reset-container">
       <div className="auth-hero card glass">
         <span className="eyebrow">Secure Security Update 🔒</span>
-        <h1 className="death-title">Quiet Record</h1>
+        <h1 className="death-title">Galaxio</h1>
         <p>
           Update your credentials to maintain secure access to your digital legacy and personal records.
         </p>

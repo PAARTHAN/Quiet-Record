@@ -11,8 +11,8 @@ from core.config import TRIGGER_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS, CO
 # Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Death Note Backend",
-    description="Refactored modular backend for Death Note.",
+    title="Galaxio Backend",
+    description="Refactored modular backend for Galaxio.",
 )
 
 # Setup CORS
@@ -39,7 +39,7 @@ def startup_event():
 @app.get("/", tags=["health"])
 def read_root():
     return {
-        "message": "Death Note backend is running",
+        "message": "Galaxio backend is running",
         "trigger_threshold_seconds": TRIGGER_THRESHOLD_SECONDS,
         "warning_threshold_seconds": WARNING_THRESHOLD_SECONDS,
     }

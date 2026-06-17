@@ -33,13 +33,20 @@
 .death-title {
   font-family: var(--font-accent);
   font-weight: 700;
-  font-size: 1.35rem; /* Wide tracking logo */
+  font-size: 1.85rem; /* Bigger logo */
   background: linear-gradient(135deg, #c084fc, #ff4b91, #00d2ff); /* cosmic violet to pink to cyan */
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   letter-spacing: 0.15em;
   text-transform: uppercase;
+}
+
+.sidebar-top {
+  padding: 12px 0 20px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .sidebar-copy {

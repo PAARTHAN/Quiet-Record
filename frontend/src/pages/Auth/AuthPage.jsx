@@ -75,6 +75,12 @@ export default function AuthPage({ onLogin }) {
   return (
     <div className="auth-page">
       <div className="auth-hero card glass">
+        <div className="cosmic-visualizer">
+          <div className="cosmic-core"></div>
+          <div className="cosmic-orbit orbit-1"><div className="planet planet-1"></div></div>
+          <div className="cosmic-orbit orbit-2"><div className="planet planet-2"></div></div>
+          <div className="cosmic-orbit orbit-3"><div className="planet planet-3"></div></div>
+        </div>
         <span className="eyebrow">Your Last Message to Your Loved Ones❣️</span>
         <h1 className="death-title">Galaxio</h1>
         <p>

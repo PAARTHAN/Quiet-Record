@@ -240,3 +240,100 @@
 .auth-card {
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Cosmic Orbit Visualizer */
+.auth-hero .cosmic-visualizer {
+  position: absolute;
+  top: 50%;
+  right: -50px;
+  width: 400px;
+  height: 400px;
+  transform: translateY(-50%) rotateX(55deg) rotateY(-10deg);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cosmic-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  margin-top: -40px;
+  margin-left: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ff4b91 0%, #9d4edd 50%, transparent 80%);
+  filter: drop-shadow(0 0 25px rgba(157, 78, 221, 0.8));
+  animation: pulseCore 4s infinite alternate ease-in-out;
+}
+
+.cosmic-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.orbit-1 {
+  width: 180px;
+  height: 180px;
+  animation: rotateOrbit 12s linear infinite;
+}
+
+.orbit-2 {
+  width: 280px;
+  height: 280px;
+  animation: rotateOrbitReverse 20s linear infinite;
+}
+
+.orbit-3 {
+  width: 380px;
+  height: 380px;
+  animation: rotateOrbit 32s linear infinite;
+}
+
+.planet {
+  position: absolute;
+  border-radius: 50%;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.planet-1 {
+  width: 12px;
+  height: 12px;
+  background: #00d2ff;
+  box-shadow: 0 0 10px #00d2ff;
+}
+
+.planet-2 {
+  width: 16px;
+  height: 16px;
+  background: #ffb300;
+  box-shadow: 0 0 12px #ffb300;
+}
+
+.planet-3 {
+  width: 14px;
+  height: 14px;
+  background: #ff4b91;
+  box-shadow: 0 0 10px #ff4b91;
+}
+
+@keyframes pulseCore {
+  0% { transform: scale(0.9); opacity: 0.8; filter: drop-shadow(0 0 15px rgba(255, 75, 145, 0.7)); }
+  100% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 35px rgba(157, 78, 221, 0.95)); }
+}
+
+@keyframes rotateOrbit {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes rotateOrbitReverse {
+  from { transform: translate(-50%, -50%) rotate(360deg); }
+  to { transform: translate(-50%, -50%) rotate(0deg); }
+}

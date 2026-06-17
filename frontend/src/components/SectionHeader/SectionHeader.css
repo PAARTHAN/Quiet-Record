@@ -17,7 +17,7 @@
   font-size: clamp(1.7rem, 3vw, 2.7rem);
   line-height: 1.15;
   padding-top: 15px;
-  background: linear-gradient(135deg, #ffe08f, #ff9f43);
+  background: linear-gradient(135deg, #c084fc, #ff79b0);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;

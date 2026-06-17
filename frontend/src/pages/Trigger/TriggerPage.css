@@ -17,16 +17,16 @@
   border-radius: inherit;
   background: linear-gradient(
     90deg,
-    #ff9f43 0%,
-    #ffb873 40%,
-    #fff0cc 50%,
-    #ffb873 60%,
-    #ff9f43 100%
+    #8a2be2 0%,
+    #9d4edd 30%,
+    #ff4b91 50%,
+    #00d2ff 70%,
+    #8a2be2 100%
   );
   background-size: 200% 100%;
   animation: premiumShimmer 2s infinite linear;
   transition: width 1s linear;
-  box-shadow: 0 0 12px rgba(255, 159, 67, 0.4);
+  box-shadow: 0 0 12px rgba(157, 78, 221, 0.4);
 }
 
 @keyframes premiumShimmer {

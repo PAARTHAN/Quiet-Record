@@ -10,15 +10,16 @@
   height: 100vh;
   padding: 24px 18px;
   border-right: 1px solid var(--border);
-  background: rgba(9, 12, 26, 0.65);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(6, 7, 20, 0.35); /* Translucent space glass */
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
   display: flex;
   flex-direction: column;
   gap: 22px;
 }
 
 .brand {
+  font-family: var(--font-headings);
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: .02em;
@@ -30,11 +31,15 @@
 }
 
 .death-title {
-  font-size: 3.5rem;
-  background: linear-gradient(135deg, #c084fc, #ff79b0); /* cosmic violet to pink */
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 1.35rem; /* Wide tracking logo */
+  background: linear-gradient(135deg, #c084fc, #ff4b91, #00d2ff); /* cosmic violet to pink to cyan */
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 
 .sidebar-copy {
@@ -58,21 +63,24 @@
   gap: 12px;
   min-height: 48px;
   padding: 0 16px;
-  border-radius: 20px;
-  color: #d7deed;
-  border: 3px solid transparent;
-  transition: background .15s ease, border-color .15s ease;
+  border-radius: 14px;
+  color: #a4adc9;
+  border: 1px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, .04);
-  border-color: var(--border);
+  background: rgba(157, 78, 221, 0.08);
+  border-color: rgba(157, 78, 221, 0.2);
+  color: #f1f3f9;
+  transform: translateX(4px);
 }
 
 .nav-link.active {
-  background: rgba(157, 78, 221, 0.15) !important;
-  border-color: rgba(157, 78, 221, 0.3) !important;
+  background: rgba(157, 78, 221, 0.18) !important;
+  border-color: rgba(157, 78, 221, 0.45) !important;
   color: #c084fc !important;
+  box-shadow: 0 4px 15px rgba(157, 78, 221, 0.15);
 }
 
 .nav-link__label {
@@ -90,9 +98,9 @@
   display: grid;
   justify-content: center;
   gap: 8px;
-  padding: 24px;
+  padding: 20px 24px;
   border-radius: 14px;
-  background: rgba(13, 17, 34, 0.6);
+  background: rgba(13, 17, 34, 0.25);
   border: 1px solid var(--border);
 }
 

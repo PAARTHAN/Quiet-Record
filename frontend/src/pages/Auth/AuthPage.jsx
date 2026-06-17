@@ -76,7 +76,7 @@ export default function AuthPage({ onLogin }) {
     <div className="auth-page">
       <div className="auth-hero card glass">
         <span className="eyebrow">Your Last Message to Your Loved Ones❣️</span>
-        <h1 className="death-title">Quiet Record</h1>
+        <h1 className="death-title">Galaxio</h1>
         <p>
           Keep important personal records organized, choose trusted contacts, and manage the inactivity trigger from one clean dashboard.
         </p>

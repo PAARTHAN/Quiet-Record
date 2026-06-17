@@ -71,13 +71,13 @@ export default function Layout({ user, onLogout, triggerStatus, children }) {
   return (
     <div className="shell shell-modern">
       <header className="mobile-header">
-        <div className="brand death-title brand-small">Quiet Record</div>
+        <div className="brand death-title brand-small">Galaxio</div>
         <button className="logout-btn-mobile" onClick={onLogout}>Logout</button>
       </header>
 
       <aside className="sidebar sidebar-modern">
         <div className="sidebar-top">
-          <div className="brand death-title brand-small">Quiet Record</div>
+          <div className="brand death-title brand-small">Galaxio</div>
         </div>
 
         <nav className="nav-links nav-links-modern">

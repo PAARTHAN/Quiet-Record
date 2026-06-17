@@ -28,7 +28,16 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 # 1 hour
 CORS_ORIGINS_RAW = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_RAW.split(",") if origin.strip()]
 
+# Helper to strip quotes and whitespace
+def _clean_env(val: str | None) -> str | None:
+    if val is None:
+        return None
+    val = val.strip()
+    if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+        val = val[1:-1].strip()
+    return val
+
 # Twilio Settings
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER")
+TWILIO_ACCOUNT_SID = _clean_env(os.getenv("TWILIO_ACCOUNT_SID"))
+TWILIO_AUTH_TOKEN = _clean_env(os.getenv("TWILIO_AUTH_TOKEN"))
+TWILIO_FROM_NUMBER = _clean_env(os.getenv("TWILIO_FROM_NUMBER"))

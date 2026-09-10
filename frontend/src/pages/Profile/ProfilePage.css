@@ -1,96 +1,51 @@
-.profile-shell-grid {
+.summary-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
 }
 
-.triple-summary {
+.summary-tile {
+  padding: 0.875rem;
+  background: var(--card-sunk);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+.summary-tile span {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.summary-tile strong { display: block; font-size: 1.0625rem; font-weight: 600; margin-top: 0.2rem; }
+.summary-tile .is-asset { color: var(--series-equity); }
+.summary-tile .is-debt { color: var(--critical); }
+.summary-tile .is-lent { color: var(--series-receivable); }
+
+.final-message {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.75;
+  background: var(--card-sunk);
+  /* Ruled paper, so a written message reads like one. */
+  background-image: repeating-linear-gradient(
+    var(--card-sunk) 0 calc(1.75rem - 1px),
+    var(--rule-soft) calc(1.75rem - 1px) 1.75rem
+  );
+  padding: 0.75rem 1rem;
+}
+
+.recipient-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
 }
-
-.mini-stat {
-  display: grid;
-  gap: 8px;
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
+.recipient {
+  padding: 0.875rem;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius);
+  background: var(--card-sunk);
 }
-
-.mini-stat strong {
-  font-size: clamp(1.05rem, 2.2vw, 1.45rem) !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  word-break: normal !important;
-  display: block !important;
-}
-
-/* --- Added Semantic Colors & Tints --- */
-.tint-debt {
-  background: linear-gradient(145deg, rgba(255, 107, 107, 0.08), rgba(255, 107, 107, 0.02));
-  border-color: rgba(255, 107, 107, 0.2);
-}
-.text-debt { color: #ff8b8b; }
-
-.tint-lent {
-  background: linear-gradient(145deg, rgba(0, 210, 255, 0.08), rgba(0, 210, 255, 0.02));
-  border-color: rgba(0, 210, 255, 0.2);
-}
-.text-lent { color: #8ee5f0; }
-
-.tint-asset {
-  background: linear-gradient(145deg, rgba(53, 196, 139, 0.08), rgba(53, 196, 139, 0.02));
-  border-color: rgba(53, 196, 139, 0.2);
-}
-.text-asset { color: #8ef0c9; }
-
-/* --- Added List Decorations --- */
-.list-decor {
-  gap: 16px;
-}
-.outline-item {
-  background: transparent;
-  border: 1px dashed rgba(255, 255, 255, 0.15);
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-.outline-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(157, 78, 221, 0.45);
-}
-
-.row-align {
-  display: flex;
-  align-items: center;
-}
-
-.icon-circle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 50%;
-  font-size: 1.1rem;
-}
-
-.emerald-text { color: #8ef0c9; font-weight: 700; }
-.flex-column { display: flex; flex-direction: column; }
-.flex-grow { flex-grow: 1; margin-top: auto; }
-@media (max-width: 1180px) {
-  .profile-shell-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-@media (max-width: 800px) {
-  .triple-summary {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
-}
+.recipient strong { font-family: var(--font-display); font-size: 1rem; }

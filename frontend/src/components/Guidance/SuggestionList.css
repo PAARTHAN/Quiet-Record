@@ -1,0 +1,79 @@
+.suggestion-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.suggestion {
+  padding: 1rem 0 1rem 1rem;
+  border-bottom: 1px solid var(--rule-soft);
+  border-left: 3px solid var(--rule-strong);
+}
+.suggestion:last-child { border-bottom: none; }
+.suggestion:first-child { padding-top: 0.25rem; }
+
+.suggestion.tone-critical { border-left-color: var(--critical); }
+.suggestion.tone-warning { border-left-color: var(--warning); }
+.suggestion.tone-opportunity { border-left-color: var(--series-property); }
+.suggestion.tone-good { border-left-color: var(--good); }
+.suggestion.tone-info { border-left-color: var(--rule-strong); }
+
+.suggestion__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.3rem;
+}
+
+.suggestion__flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.tone-critical .suggestion__flag { color: var(--critical); }
+.tone-warning .suggestion__flag { color: var(--warning); }
+.tone-opportunity .suggestion__flag { color: var(--series-property); }
+.tone-good .suggestion__flag { color: var(--good); }
+.tone-info .suggestion__flag { color: var(--muted-strong); }
+
+.suggestion__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  font-size: 0.5625rem;
+  line-height: 1;
+}
+
+.suggestion__metric {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  background: var(--card-sunk);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0.15rem 0.45rem;
+}
+
+.suggestion h3 { font-size: 1.0625rem; margin-bottom: 0.25rem; }
+.suggestion p { font-size: 0.8125rem; color: var(--muted-strong); line-height: 1.6; max-width: 72ch; }
+
+.suggestion__action {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--navy-soft);
+  text-decoration: none;
+}
+.suggestion__action:hover { text-decoration: underline; text-underline-offset: 3px; }

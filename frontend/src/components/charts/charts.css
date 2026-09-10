@@ -1,0 +1,112 @@
+/* Chart chrome shared by the advisory figures. */
+
+.chart-empty {
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--card-sunk);
+  padding: 1.25rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* Headroom for the hover tooltip, which sits above the bar. */
+.allocation-shell { padding-top: 4rem; }
+/* Anchored to the bar's top edge and lifted by its own height, so the reserved
+   headroom holds it whether it wraps to one line or two. */
+.allocation-shell .chart-tooltip {
+  top: 4rem;
+  transform: translate(-50%, -100%);
+  margin-top: -0.5rem;
+}
+
+.allocation-legend {
+  list-style: none;
+  margin: 0.875rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.5rem 1.25rem;
+}
+.allocation-legend .legend-item { justify-content: flex-start; }
+.allocation-legend .legend-value { margin-left: auto; }
+
+/* --- Drift ------------------------------------------------------------- */
+
+.drift-chart { display: flex; flex-direction: column; gap: 0.875rem; }
+
+.drift-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 150px) minmax(120px, 1fr) minmax(150px, 210px);
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.drift-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.drift-track {
+  position: relative;
+  height: 22px;
+  background: var(--card-sunk);
+  border-radius: 2px;
+}
+.drift-baseline {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--rule-strong);
+}
+.drift-bar { position: absolute; top: 3px; bottom: 3px; }
+
+.drift-values { display: flex; flex-direction: column; gap: 0.1rem; text-align: right; }
+.drift-delta { font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.drift-amount { font-size: 0.6875rem; color: var(--muted); }
+
+/* --- Score meter -------------------------------------------------------- */
+
+.score-meter { display: flex; flex-direction: column; gap: 0.75rem; }
+.score-meter__denom { font-size: 1.125rem; font-weight: 500; color: var(--muted); margin-left: 0.2rem; }
+.score-meter__verdict {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+.score-meter__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.score-meter__caption { font-size: 0.75rem; color: var(--muted); }
+
+@media (max-width: 700px) {
+  .drift-row { grid-template-columns: minmax(0, 1fr); gap: 0.35rem; }
+  .drift-values { text-align: left; }
+}
+
+/* Let the viewBox drive the height so the plot fills its card rather than
+   letterboxing inside a fixed-height box. */
+.projection-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Near the top of the plot there is no room above the marker, so drop under it. */
+.chart-tooltip.is-below { transform: translate(-50%, 15%); }

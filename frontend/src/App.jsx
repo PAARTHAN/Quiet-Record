@@ -3,13 +3,14 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
 import AuthPage from "./pages/Auth/AuthPage";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
+import AdvisorPage from "./pages/Advisor/AdvisorPage";
 import RecordsPage from "./pages/Records/RecordsPage";
 import ContactsPage from "./pages/Contacts/ContactsPage";
 import TriggerPage from "./pages/Trigger/TriggerPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import ResetPasswordPage from "./pages/Auth/ResetPasswordPage";
 import { apiFetch, logout as apiLogout, API_BASE } from "./api";
-import { getStoredUser, setStoredUser } from "./storage";
+import { getStoredUser, setStoredUser, getFinancialProfile, setFinancialProfile } from "./storage";
 
 export default function App() {
   const [user, setUserState] = useState(() => getStoredUser());
@@ -18,6 +19,7 @@ export default function App() {
   const [backendStatus, setBackendStatus] = useState("Checking backend...");
   const [triggerStatus, setTriggerStatus] = useState(null);
   const [authChecking, setAuthChecking] = useState(true);
+  const [financialProfile, setFinancialProfileState] = useState(null);
 
   // One-time cleanup of legacy keys
   useEffect(() => {
@@ -128,6 +130,16 @@ export default function App() {
   }
 
   useEffect(() => {
+    setFinancialProfileState(user?.id ? getFinancialProfile(user.id) : null);
+  }, [user?.id]);
+
+  function saveFinancialProfile(profile) {
+    if (!user?.id) return;
+    setFinancialProfile(user.id, profile);
+    setFinancialProfileState(profile);
+  }
+
+  useEffect(() => {
     if (!user?.id) return;
     loadRecords();
     loadContacts();
@@ -206,7 +218,7 @@ export default function App() {
   }
 
   if (authChecking) {
-    return <div className="loading-screen">Restoring session...</div>;
+    return <div className="loading-screen">Opening your record…</div>;
   }
 
   if (!user) {
@@ -221,7 +233,8 @@ export default function App() {
   return (
     <Layout user={user} onLogout={handleLogout} backendStatus={backendStatus} triggerStatus={triggerStatus}>
       <Routes>
-        <Route path="/" element={<DashboardPage user={user} records={records} contacts={contacts} triggerStatus={triggerStatus} />} />
+        <Route path="/" element={<DashboardPage user={user} records={records} contacts={contacts} triggerStatus={triggerStatus} financialProfile={financialProfile} />} />
+        <Route path="/advisor" element={<AdvisorPage user={user} records={records} contacts={contacts} triggerStatus={triggerStatus} financialProfile={financialProfile} saveProfile={saveFinancialProfile} />} />
         <Route path="/records" element={<RecordsPage user={user} records={records} loadRecords={loadRecords} />} />
         <Route path="/contacts" element={<ContactsPage user={user} contacts={contacts} loadContacts={loadContacts} />} />
         <Route path="/trigger" element={<TriggerPage user={user} setUser={setUser} records={records} contacts={contacts} triggerStatus={triggerStatus} refreshStatus={() => loadStatus(false)} />} />

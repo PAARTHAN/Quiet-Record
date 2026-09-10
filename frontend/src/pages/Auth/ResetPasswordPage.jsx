@@ -16,7 +16,7 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     if (!token) {
-      setMessage("Missing or invalid reset token. Please use the password reset link sent to your email.");
+      setMessage("That link is missing its reset token. Use the link from your email.");
     }
   }, [token]);
 
@@ -51,46 +51,52 @@ export default function ResetPasswordPage() {
     }
   }
   return (
-    <div className="auth-page reset-container">
-      <div className="auth-hero">
-        <span className="eyebrow">Secure Security Update 🔒</span>
-        <h1 className="death-title">Galaxio</h1>
-        <p>
-          Update your credentials to maintain secure access to your digital legacy and personal records.
-        </p>
-      </div>
+    <div className="auth-page">
+      <section className="auth-hero">
+        <div className="auth-hero__inner">
+          <div className="auth-mark">
+            Quiet Record
+            <em>Est. for the things that outlast us</em>
+          </div>
+          <h1>Set a new password.</h1>
+          <p>
+            Choose something you have not used elsewhere. Your records stay exactly as you left them.
+          </p>
+        </div>
+      </section>
 
-      <div className="auth-card card glass">
+      <section className="auth-panel">
+        <div className="card auth-card">
         {!success ? (
           <>
-            <div className="section-header compact">
+            <div className="section-header compact auth-heading">
               <div>
-                <h1>Set New Password</h1>
-                <p>Choose a strong, unique password to protect your account.</p>
+                <h1>New password</h1>
+                <p>At least eight characters, and different from the last one.</p>
               </div>
             </div>
 
             <form className="form-grid" onSubmit={handleSubmit}>
-              <div className="input-group">
+              <div className="field">
+                <label htmlFor="new-password">New password</label>
                 <input
+                  id="new-password"
                   type="password"
-                  placeholder="New password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   minLength="8"
                   required
-                  className="premium-input"
                 />
               </div>
-              <div className="input-group">
+              <div className="field">
+                <label htmlFor="confirm-password">Confirm new password</label>
                 <input
+                  id="confirm-password"
                   type="password"
-                  placeholder="Confirm new password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   minLength="8"
                   required
-                  className="premium-input"
                 />
               </div>
               
@@ -100,29 +106,28 @@ export default function ResetPasswordPage() {
                 </div>
               )}
 
-              <button type="submit" className="primary-btn" disabled={loading || !token}>
-                {loading ? "Updating Security..." : "Reset My Password"}
+              <button type="submit" disabled={loading || !token}>
+                {loading ? "Updating…" : "Set new password"}
               </button>
             </form>
           </>
         ) : (
           <div className="success-state">
-            <div className="success-icon">✓</div>
-            <h1>Success!</h1>
+            <div className="success-icon" aria-hidden="true">✓</div>
+            <h1>Password updated</h1>
             <p>{message}</p>
-            <div className="redirect-hint">Redirecting to login in a few seconds...</div>
-            <button className="primary-btn top-gap" onClick={() => navigate("/")}>
-              Login Now
-            </button>
+            <div className="redirect-hint">Taking you to sign in shortly…</div>
+            <button className="top-gap" onClick={() => navigate("/")}>Sign in now</button>
           </div>
         )}
 
-        {!success && (
-          <button className="text-button top-gap" onClick={() => navigate("/")}>
-            ← Back to login
-          </button>
-        )}
-      </div>
+          {!success && (
+            <button className="link-btn top-gap" onClick={() => navigate("/")}>
+              ← Back to sign in
+            </button>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

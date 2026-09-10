@@ -1,132 +1,251 @@
-import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
-import { calculateBuckets, currencyTotal, formatCurrency, formatServerDate, getDashboardInsights, formatDuration, formatThreshold } from "../../storage";
+import SuggestionList from "../../components/Guidance/SuggestionList";
+import AllocationBar from "../../components/charts/AllocationBar";
+import ScoreMeter from "../../components/charts/ScoreMeter";
+import { ALLOCATION_ORDER, ASSET_CLASSES, buildAdvice } from "../../advisor";
+import { formatCurrency, formatDuration, formatServerDate } from "../../storage";
 import "./DashboardPage.css";
 
-export default function DashboardPage({ user, records, contacts, triggerStatus }) {
-  const buckets = calculateBuckets(records);
-  const insights = getDashboardInsights(records);
-  const recentRecords = [...records].slice(0, 5);
+function greeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
 
+export default function DashboardPage({ user, records, contacts, triggerStatus, financialProfile }) {
+  const advice = buildAdvice({
+    records,
+    contacts,
+    user,
+    triggerStatus,
+    profile: financialProfile,
+    currency: formatCurrency,
+  });
 
+  const { portfolio, health, plan, profile, suggestions } = advice;
+  const firstName = (user.name || "").trim().split(" ")[0] || "there";
+
+  const segments = ALLOCATION_ORDER.map((key) => ({
+    key,
+    label: ASSET_CLASSES[key].label,
+    value: portfolio.totals[key],
+  }));
+
+  const countdown = triggerStatus?.is_triggered
+    ? "Released"
+    : !triggerStatus?.is_timer_active
+      ? "Not armed"
+      : triggerStatus?.seconds_until_trigger !== undefined
+        ? formatDuration(triggerStatus.seconds_until_trigger)
+        : "—";
 
   return (
     <>
       <SectionHeader
-        title="Dashboard"
-        description="A clear overview of your records, trigger timer, and emergency readiness."
+        eyebrow="Overview"
+        title={`${greeting()}, ${firstName}`}
+        description="Where your money stands today, what it is doing, and the next thing worth doing about it."
+        action={<Link className="btn" to="/advisor">Open the full plan</Link>}
       />
 
-      <div className="dashboard-hero-grid">
-        <div className="card hero-card warm-theme hero-span-two">
-          <span className="eyebrow warm">Emergency readiness</span>
-          <h2>Everything important is organized and easy to review for your loved ones.</h2>
-          <p className="muted">
-            Your records, contacts, final message, and trigger status are all available in one place.
+      {!profile.isComplete ? (
+        <div className="notice warning dash-prompt">
+          <div>
+            <strong>Three of the five health pillars are unmeasured.</strong> Add your monthly income and
+            expenses and the emergency fund, savings rate, monthly plan and retirement projection all come to life.
+          </div>
+          <Link className="btn gold" to="/advisor">Complete profile</Link>
+        </div>
+      ) : null}
+
+      <div className="dash-hero">
+        <div className="card card-ledger dash-networth">
+          <span className="eyebrow">Net worth</span>
+          <div className={`hero-figure ${portfolio.netWorth < 0 ? "is-negative" : ""}`}>
+            {formatCurrency(portfolio.netWorth)}
+          </div>
+          <p className="muted small">
+            {formatCurrency(portfolio.assets)} in assets less {formatCurrency(portfolio.liabilities)} owed,
+            across {records.length} record{records.length === 1 ? "" : "s"}.
           </p>
+          <div className="networth-split">
+            <div>
+              <span>Assets</span>
+              <strong className="figure">{formatCurrency(portfolio.assets)}</strong>
+            </div>
+            <div>
+              <span>Liabilities</span>
+              <strong className="figure is-liability">{formatCurrency(portfolio.liabilities)}</strong>
+            </div>
+          </div>
         </div>
 
-        <div className="card summary-card">
-          <span className="eyebrow">Live countdown</span>
-          <div className="timer-hero">
-            {triggerStatus?.is_triggered
-              ? "TIME OUT"
-              : !triggerStatus?.is_timer_active 
-                ? "--" 
-                : triggerStatus?.seconds_until_trigger !== undefined ? formatDuration(triggerStatus.seconds_until_trigger) : "--"}
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <h2>Financial health</h2>
+              <p>{health.measuredCount} of {health.totalCount} pillars measured</p>
+            </div>
           </div>
-          <p className="muted">
+          <ScoreMeter
+            score={health.score}
+            grade={health.grade}
+            label={health.label}
+            tone={health.tone}
+            caption="Emergency fund, debt load, savings rate, diversification and protection, weighted equally."
+          />
+          <Link className="link-btn dash-inline-link" to="/advisor">See how it breaks down →</Link>
+        </div>
+
+        <div className="card dash-watch">
+          <span className="eyebrow">Safety trigger</span>
+          <div className="timer-hero">{countdown}</div>
+          <p className="muted small">
             {triggerStatus?.is_triggered
-              ? "Trigger has been pulled. Check the Trigger page."
-              : !triggerStatus?.is_timer_active 
-                ? "Click 'Check in now' on the Trigger page to activate." 
-                : "Time remaining before the Trigger gets Pulled."}
+              ? "Your records have been released to your trusted circle."
+              : !triggerStatus?.is_timer_active
+                ? "Check in once to arm the inactivity watch."
+                : "Remaining before your records go to your trusted circle."}
           </p>
+          <div className="list top-gap">
+            <div className="item row-between"><span>Last check-in</span><strong className="small">{formatServerDate(user.last_check_in)}</strong></div>
+            <div className="item row-between"><span>Trusted contacts</span><strong>{contacts.length}</strong></div>
+          </div>
+          <Link className="link-btn dash-inline-link" to="/trigger">Manage the trigger →</Link>
         </div>
       </div>
 
-      <div className="stats-grid wide-4">
-        <div className="stat-card card accent-debt">
-          <span>Amount in debt</span>
-          <strong>{formatCurrency(buckets.debt)}</strong>
-          <p className="muted">Loans, dues, and outgoing liabilities.</p>
-        </div>
-        <div className="stat-card card accent-lent">
-          <span>Money owed to me</span>
-          <strong>{formatCurrency(buckets.lent)}</strong>
-          <p className="muted">Expected inflows from people or businesses.</p>
-        </div>
+      <div className="stats-grid">
         <div className="stat-card card accent-assets">
-          <span>Assets</span>
-          <strong>{formatCurrency(buckets.assets)}</strong>
-          <p className="muted">Insurance, stocks, bonds, property, and other saved value.</p>
+          <span>Invested</span>
+          <strong>{formatCurrency(portfolio.totals.equity + portfolio.totals.bonds + portfolio.totals.property)}</strong>
+          <p>Equity, fixed income and property.</p>
         </div>
         <div className="stat-card card accent-total">
-          <span>Total recorded amount</span>
-          <strong>{formatCurrency(currencyTotal(records))}</strong>
-          <p className="muted">Complete value of all recorded entries.</p>
+          <span>Cash cushion</span>
+          <strong>{formatCurrency(portfolio.totals.cash)}</strong>
+          <p>
+            {health.monthsCovered === null
+              ? "Add expenses to see months of cover."
+              : `${health.monthsCovered.toFixed(1)} months of expenses.`}
+          </p>
+        </div>
+        <div className="stat-card card accent-lent">
+          <span>Owed to you</span>
+          <strong>{formatCurrency(portfolio.totals.receivable)}</strong>
+          <p>Receivables still to be collected.</p>
+        </div>
+        <div className="stat-card card accent-plan">
+          <span>Monthly surplus</span>
+          <strong>{plan ? formatCurrency(plan.surplus) : "—"}</strong>
+          <p>
+            {plan
+              ? `${(plan.savingsRate * 100).toFixed(0)}% of income kept back.`
+              : "Income and expenses not set."}
+          </p>
         </div>
       </div>
 
-      <div className="content-grid dashboard-main-grid">
-        <div className="card stretch-card">
-          <div className="row-between section-spacer wrap-mobile">
-            <div>
-              <h2>Recent records</h2>
-              <p className="muted">Latest records saved for this account.</p>
+      <div className="split-main">
+        <div className="stack">
+          <div className="card">
+            <div className="card-head">
+              <div>
+                <h2>How your money is spread</h2>
+                <p>Every recorded asset, by class.</p>
+              </div>
+              <Link className="link-btn" to="/advisor">Target mix →</Link>
             </div>
-            <span className="pill-muted">{records.length} total records</span>
-          </div>
-          <div className="record-grid dashboard-record-grid enhanced-grid">
-            {recentRecords.length === 0 ? (
-              <div className="item muted">No records added yet.</div>
-            ) : (
-              recentRecords.map((item) => (
-                <div className="item rich-item record-card-elevated" key={item.id}>
-                  <div className="row-between align-start gap-12">
-                    <div className="flex-1">
-                      <strong>{item.title}</strong>
-                      <div className="muted small-gap">{item.owner || "No person or company added"}</div>
-                    </div>
-                    <span className="badge gold">{item.category || "Other"}</span>
-                  </div>
-                  <div className="record-amount">{formatCurrency(item.amount)}</div>
-                  <p className="muted small-gap">{item.details || "No details added"}</p>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className="stack-grid">
-          <div className="card intelligence-card">
-            <h2>Highlights</h2>
-            <div className="list">
-              <div className="item">
-                <strong>Highest liability</strong>
-                <p className="muted">{insights.highestDebt ? `${insights.highestDebt.title} • ${formatCurrency(insights.highestDebt.amount)}` : "No debt entries yet."}</p>
-              </div>
-              <div className="item">
-                <strong>Largest receivable</strong>
-                <p className="muted">{insights.highestOwed ? `${insights.highestOwed.title} • ${formatCurrency(insights.highestOwed.amount)}` : "No money-owed-to-me entries yet."}</p>
-              </div>
-              <div className="item">
-                <strong>Strongest asset</strong>
-                <p className="muted">{insights.strongestAsset ? `${insights.strongestAsset.title} • ${formatCurrency(insights.strongestAsset.amount)}` : "No asset-side entries yet."}</p>
-              </div>
-            </div>
+            <AllocationBar segments={segments} total={portfolio.assets} formatValue={formatCurrency} />
           </div>
 
           <div className="card">
-            <h2>Status overview</h2>
-            <div className="list">
-              <div className="item row-between"><span>Last check-in</span><strong>{formatServerDate(user.last_check_in)}</strong></div>
-              <div className="item row-between"><span>Warning mail</span><strong>{triggerStatus?.warning_sent ? "Sent" : triggerStatus?.seconds_until_warning !== undefined ? `${formatDuration(triggerStatus.seconds_until_warning)} left` : "--"}</strong></div>
-              <div className="item row-between"><span>Final trigger</span><strong>{triggerStatus ? formatThreshold(triggerStatus.threshold_seconds) : "3 months"}</strong></div>
-              <div className="item row-between"><span>Inactivity duration</span><strong>{triggerStatus ? formatDuration(triggerStatus.seconds_since_check_in) : "--"}</strong></div>
-              <div className="item row-between"><span>Trusted contacts</span><strong>{contacts.length}</strong></div>
-              <div className="item row-between"><span>Trigger state</span><strong>{user.is_triggered ? "Triggered" : "Monitoring"}</strong></div>
+            <div className="card-head">
+              <div>
+                <h2>What to do next</h2>
+                <p>Ordered by urgency, computed from your own records.</p>
+              </div>
+              <span className="pill-muted">{suggestions.length} in total</span>
             </div>
+            <SuggestionList
+              suggestions={suggestions}
+              limit={4}
+              emptyText="Nothing pressing. Add records to sharpen the guidance."
+            />
+            {suggestions.length > 4 ? (
+              <Link className="link-btn top-gap" to="/advisor">
+                See all {suggestions.length} recommendations →
+              </Link>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="stack">
+          {plan ? (
+            <div className="card">
+              <div className="card-head">
+                <div>
+                  <h2>This month</h2>
+                  <p>Where your {formatCurrency(plan.surplus)} surplus should go.</p>
+                </div>
+              </div>
+              <div className="list">
+                {plan.buckets.map((bucket) => (
+                  <div className="item" key={bucket.key}>
+                    <div className="row-between">
+                      <span>{bucket.label}</span>
+                      <strong className="figure">{formatCurrency(bucket.amount)}</strong>
+                    </div>
+                    <p className="muted tiny">{bucket.note}</p>
+                  </div>
+                ))}
+              </div>
+              <Link className="link-btn top-gap" to="/advisor">Full monthly plan →</Link>
+            </div>
+          ) : (
+            <div className="card">
+              <h2>This month</h2>
+              <p className="muted small top-gap">
+                Once your income and expenses are recorded, this becomes a monthly instruction: how much to
+                hold back, how much to send at debt, and how much to invest.
+              </p>
+              <Link className="btn top-gap" to="/advisor">Set it up</Link>
+            </div>
+          )}
+
+          <div className="card">
+            <div className="card-head">
+              <div>
+                <h2>Recent records</h2>
+                <p>{records.length} in the vault.</p>
+              </div>
+            </div>
+            {records.length === 0 ? (
+              <div className="empty-state">
+                <strong>The vault is empty</strong>
+                Add what you own and owe to begin.
+              </div>
+            ) : (
+              <div className="list">
+                {records.slice(0, 5).map((item) => (
+                  <div className="item recent-record" key={item.id}>
+                    <div className="row-between align-start">
+                      <div className="flex-1">
+                        <strong>{item.title}</strong>
+                        <div className="muted tiny">{item.owner || "No counterparty recorded"}</div>
+                      </div>
+                      <div className="recent-record__right">
+                        <span className="figure">{formatCurrency(item.amount)}</span>
+                        <span className="badge plain">{item.category || "Other"}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Link className="link-btn top-gap" to="/records">Open the vault →</Link>
           </div>
         </div>
       </div>

@@ -5,15 +5,31 @@ import "./ContactsPage.css";
 
 const emptyContact = { name: "", email: "", phone: "", relationship: "" };
 
-export default function ContactsPage({ user, contacts, loadContacts }) {
+function initials(name) {
+  return (name || "")
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+export default function ContactsPage({ contacts, loadContacts }) {
   const [form, setForm] = useState(emptyContact);
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState("");
+  const [confirmId, setConfirmId] = useState(null);
+
+  const readiness = contacts.length === 0
+    ? { label: "Unreachable", tone: "critical", note: "Nothing will be released — there is nobody to release it to." }
+    : contacts.length < 2
+      ? { label: "Single point of failure", tone: "warning", note: "One contact means one thing has to go right. Add a second." }
+      : { label: "Ready", tone: "good", note: "Enough people to make the release reliable." };
 
   async function handleSubmit(event) {
     event.preventDefault();
     setMessage("");
-
     try {
       if (editingId) {
         await apiFetch(`/contacts/${editingId}`, { method: "PUT", body: JSON.stringify(form) });
@@ -34,7 +50,8 @@ export default function ContactsPage({ user, contacts, loadContacts }) {
     try {
       await apiFetch(`/contacts/${id}`, { method: "DELETE" });
       await loadContacts();
-      setMessage("Contact deleted.");
+      setMessage("Contact removed.");
+      setConfirmId(null);
     } catch (error) {
       setMessage(error.message);
     }
@@ -42,6 +59,7 @@ export default function ContactsPage({ user, contacts, loadContacts }) {
 
   function startEdit(contact) {
     setEditingId(contact.id);
+    setConfirmId(null);
     setForm({
       name: contact.name,
       email: contact.email,
@@ -50,135 +68,142 @@ export default function ContactsPage({ user, contacts, loadContacts }) {
     });
   }
 
-  function resetForm() {
-    setEditingId(null);
-    setForm(emptyContact);
-  }
-
-  const getInitials = (name) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  const readinessScore = contacts.length === 0 ? "Critical" : contacts.length < 3 ? "Caution" : "Optimal";
-  const readinessColor = contacts.length === 0 ? "ruby" : contacts.length < 3 ? "topaz" : "emerald";
-
   return (
     <>
       <SectionHeader
-        title="Trusted Contacts"
-        description="Manage the people who should receive your emergency report."
+        eyebrow="The trusted circle"
+        title="Trusted contacts"
+        description="The people who receive your legacy report if you become unreachable. They see nothing until that moment."
+        action={<span className={`badge ${readiness.tone}`}>{readiness.label}</span>}
       />
 
-      <div className="content-grid contacts-dual-grid">
-        <div className="card contact-form-box">
-          <div className="section-header">
-            <div>
-              <h1>{editingId ? "Edit Trusted Contact" : "Add Trusted Contact"}</h1>
-              <p>Register a person to receive your emergency data.</p>
-            </div>
-          </div>
-          <form className="form-grid top-gap" onSubmit={handleSubmit}>
-            <div className="input-group">
-              <label>Full Name</label>
-              <input placeholder="Ex: John Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[^a-zA-Z ]/g, "") })} pattern="[A-Za-z ]+" title="Use letters and spaces only" required />
-            </div>
-            <div className="input-group">
-              <label>Email Address</label>
-              <input type="email" placeholder="john@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
-            </div>
-            <div className="two-col">
-              <div className="input-group">
-                <label>Phone (with Country Code)</label>
-                <input 
-                  placeholder="+91 98765 43210" 
-                  inputMode="tel" 
-                  pattern="\+[1-9]\d{1,3}\d{10}" 
-                  title="Include + followed by country code and 10-digit number (e.g. +919876543210)"
-                  value={form.phone} 
-                  onChange={(e) => {
-                    let val = e.target.value;
-                    if (val.length > 0 && !val.startsWith('+')) val = '+' + val;
-                    // Allow only '+' at start and digits after
-                    const sanitized = val.startsWith('+') 
-                      ? '+' + val.slice(1).replace(/\D/g, "") 
-                      : val.replace(/\D/g, "");
-                    setForm({ ...form, phone: sanitized.slice(0, 15) });
-                  }} 
-                  required
-                />
-              </div>
-              <div className="input-group">
-                <label>Relationship</label>
-                <input placeholder="Ex: Family / Friend" value={form.relationship} onChange={(e) => setForm({ ...form, relationship: e.target.value.replace(/[^a-zA-Z ]/g, "") })} maxLength="40" />
-              </div>
-            </div>
-            <div className="action-row top-gap">
-              <button type="submit" className="primary-btn">{editingId ? "Save Changes" : "Save Contact"}</button>
-              <button type="button" className="secondary-btn" onClick={resetForm}>Clear</button>
-            </div>
-          </form>
-          {message ? <div className="notice slim top-gap">{message}</div> : null}
-        </div>
+      <div className="notice contacts-readiness">{readiness.note}</div>
 
-        <div className="card contact-list-box">
-          <div className="section-header">
+      <div className="split-form">
+        <form className="card contact-form" onSubmit={handleSubmit}>
+          <div className="section-header compact">
             <div>
-              <h1>Added Trusted Contacts</h1>
-              <p>{contacts.length} person(s) currently registered.</p>
+              <h1>{editingId ? "Edit contact" : "Add a contact"}</h1>
+              <p>Someone who would act on your behalf.</p>
             </div>
           </div>
 
-          <div className="contact-small-grid auto-scroll">
+          <div className="form-grid top-gap">
+            <div className="field">
+              <label htmlFor="name">Full name</label>
+              <input id="name" placeholder="e.g. Anita Rao" value={form.name}
+                     onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[^a-zA-Z ]/g, "") })}
+                     pattern="[A-Za-z ]+" title="Letters and spaces only" required />
+            </div>
+
+            <div className="field">
+              <label htmlFor="email">Email address</label>
+              <input id="email" type="email" placeholder="anita@example.com" value={form.email}
+                     onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+            </div>
+
+            <div className="field">
+              <label htmlFor="phone">Phone, with country code</label>
+              <input
+                id="phone"
+                placeholder="+919876543210"
+                inputMode="tel"
+                pattern="\+[1-9]\d{1,3}\d{10}"
+                title="Include + then the country code and number, e.g. +919876543210"
+                value={form.phone}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  if (value.length > 0 && !value.startsWith("+")) value = `+${value}`;
+                  const sanitized = value.startsWith("+")
+                    ? `+${value.slice(1).replace(/\D/g, "")}`
+                    : value.replace(/\D/g, "");
+                  setForm({ ...form, phone: sanitized.slice(0, 15) });
+                }}
+                required
+              />
+              <span className="hint">The release goes out by SMS as well as email.</span>
+            </div>
+
+            <div className="field">
+              <label htmlFor="relationship">Relationship</label>
+              <input id="relationship" placeholder="Sister, solicitor, friend…" value={form.relationship}
+                     onChange={(e) => setForm({ ...form, relationship: e.target.value.replace(/[^a-zA-Z ]/g, "") })}
+                     maxLength="40" />
+            </div>
+
+            <div className="action-row">
+              <button type="submit">{editingId ? "Save changes" : "Add contact"}</button>
+              <button type="button" className="secondary" onClick={() => { setForm(emptyContact); setEditingId(null); }}>
+                {editingId ? "Cancel" : "Clear"}
+              </button>
+            </div>
+
+            {message ? <div className="notice">{message}</div> : null}
+          </div>
+        </form>
+
+        <div className="stack">
+          <div className="card">
+            <div className="card-head">
+              <div>
+                <h2>Your circle</h2>
+                <p>{contacts.length} {contacts.length === 1 ? "person" : "people"} registered.</p>
+              </div>
+            </div>
+
             {contacts.length === 0 ? (
-              <div className="empty-notice">No trusted contacts added yet.</div>
+              <div className="empty-state">
+                <strong>No one is listed</strong>
+                Add at least two people so a single unreachable contact does not break the chain.
+              </div>
             ) : (
-              contacts.map((contact) => (
-                <div className="contact-row card" key={contact.id}>
-                  <div className="contact-info-wrapper">
-                    <div className="contact-avatar">{getInitials(contact.name)}</div>
+              <ul className="contact-list">
+                {contacts.map((contact) => (
+                  <li className="contact-row" key={contact.id}>
+                    <span className="contact-avatar" aria-hidden="true">{initials(contact.name)}</span>
                     <div className="contact-main">
-                      <strong>{contact.name}</strong>
-                      <span className="badge-pill">{contact.relationship_name || "Recipient"}</span>
-                      <div className="muted small-font">{contact.email}</div>
+                      <div className="contact-name">
+                        <strong>{contact.name}</strong>
+                        <span className="badge plain">{contact.relationship_name || "Recipient"}</span>
+                      </div>
+                      <div className="muted tiny">{contact.email}</div>
+                      <div className="muted tiny">{contact.phone || "No phone recorded"}</div>
                     </div>
-                  </div>
-                  <div className="contact-actions">
-                    <button className="icon-link" onClick={() => startEdit(contact)}>Edit</button>
-                    <button className="icon-link danger" onClick={() => handleDelete(contact.id)}>Delete</button>
-                  </div>
-                </div>
-              ))
+                    <div className="contact-actions">
+                      {confirmId === contact.id ? (
+                        <>
+                          <button className="link-btn danger" onClick={() => handleDelete(contact.id)}>Confirm</button>
+                          <button className="link-btn" onClick={() => setConfirmId(null)}>Keep</button>
+                        </>
+                      ) : (
+                        <>
+                          <button className="link-btn" onClick={() => startEdit(contact)}>Edit</button>
+                          <button className="link-btn danger" onClick={() => setConfirmId(contact.id)}>Remove</button>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
-        </div>
-      </div>
 
-      <div className="guidelines-section top-gap-large">
-        <div className="section-header center">
-          <h1>User Guidelines</h1>
-          <p>How your trusted network is managed and secured.</p>
-        </div>
-
-        <div className="guidelines-bento">
-          <div className="bento-card">
-            <div className="bento-icon">🔒</div>
-            <h3>Privacy First</h3>
-            <p>Data is encrypted and inaccessible until the emergency trigger is confirmed.</p>
-          </div>
-          <div className="bento-card">
-            <div className="bento-icon">🛡️</div>
-            <h3>Verification</h3>
-            <p>Contacts are notified only when you choose. They must verify identity to access files.</p>
-          </div>
-          <div className="bento-card">
-            <div className="bento-icon">🚀</div>
-            <h3>Auto-Delivery</h3>
-            <p>Secure links are dispatched immediately after the inactivity threshold is reached.</p>
+          <div className="card card-sunk">
+            <h2>How the release works</h2>
+            <ol className="how-list">
+              <li>
+                <strong>Nothing is shared while you check in.</strong> Your contacts are stored, but they are told
+                nothing and can see nothing.
+              </li>
+              <li>
+                <strong>A warning goes to you first.</strong> If you fall silent, you get a warning before anything
+                is sent to anyone else.
+              </li>
+              <li>
+                <strong>Then the report goes out.</strong> Each contact receives a secure link by SMS and email to
+                your records, your final message, and the counterparties they will need to reach.
+              </li>
+            </ol>
           </div>
         </div>
       </div>

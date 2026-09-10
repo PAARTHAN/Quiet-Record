@@ -1,86 +1,77 @@
 import { NavLink, useLocation } from "react-router-dom";
-import "./Layout.css";
+
+const icon = (paths) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="nav-icon">
+    {paths}
+  </svg>
+);
 
 const links = [
   {
     to: "/",
     label: "Dashboard",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="nav-icon">
-        <rect x="3" y="3" width="7" height="9" />
-        <rect x="14" y="3" width="7" height="5" />
-        <rect x="14" y="12" width="7" height="9" />
-        <rect x="3" y="16" width="7" height="5" />
-      </svg>
-    )
+    icon: icon(<><rect x="3" y="3" width="7" height="8" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="11" width="7" height="10" /><rect x="3" y="14" width="7" height="7" /></>),
+  },
+  {
+    to: "/advisor",
+    label: "Advisor",
+    icon: icon(<><path d="M3 17l5-6 4 4 4-6 5 5" /><path d="M3 21h18" /><circle cx="8" cy="11" r="1" /></>),
   },
   {
     to: "/records",
     label: "Records",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="nav-icon">
-        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-      </svg>
-    )
+    icon: icon(<><path d="M5 3h11l3 3v15H5z" /><path d="M9 8h6M9 12h6M9 16h4" /></>),
   },
   {
     to: "/contacts",
-    label: "Contacts",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="nav-icon">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    )
+    label: "Trusted circle",
+    icon: icon(<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="3.5" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.6a4 4 0 0 1 0 7.75" /></>),
   },
   {
     to: "/trigger",
-    label: "Trigger",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="nav-icon">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    )
+    label: "Safety trigger",
+    icon: icon(<><path d="M12 21s7-3.6 7-9V5.5L12 3 5 5.5V12c0 5.4 7 9 7 9z" /><path d="M12 8v4l2.5 1.5" /></>),
   },
   {
     to: "/profile",
     label: "Profile",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="nav-icon">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-    )
-  }
+    icon: icon(<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="3.5" /></>),
+  },
 ];
 
-const pageTitles = {
-  "/": "Dashboard",
-  "/records": "Records",
-  "/contacts": "Trusted Contacts",
-  "/trigger": "Safety Trigger",
-  "/profile": "Profile",
-};
+function Wordmark() {
+  return (
+    <div className="sidebar-mark">
+      Quiet Record
+      <em>Digital legacy &amp; wealth</em>
+    </div>
+  );
+}
 
 export default function Layout({ user, onLogout, triggerStatus, children }) {
-  const location = useLocation();
-  const pageTitle = pageTitles[location.pathname] || "Dashboard";
+  useLocation(); // re-render the active nav mark on navigation
+
+  const armed = triggerStatus?.is_triggered
+    ? { tone: "is-fired", text: "Trigger released" }
+    : triggerStatus?.is_timer_active
+      ? { tone: "", text: "Watch armed" }
+      : { tone: "is-idle", text: "Watch not armed" };
 
   return (
-    <div className="shell shell-modern">
+    <div className="shell">
       <header className="mobile-header">
-        <div className="death-title">GALAXIO</div>
-        <button className="logout-btn-mobile" onClick={onLogout}>Logout</button>
+        <Wordmark />
+        <button className="secondary" onClick={onLogout}>Sign out</button>
       </header>
 
-      <aside className="sidebar sidebar-modern">
+      <aside className="sidebar">
         <div className="sidebar-top">
-          <div className="death-title">GALAXIO</div>
+          <Wordmark />
         </div>
+        <div className="sidebar-divider" />
 
-        <nav className="nav-links nav-links-modern">
+        <nav className="nav-links">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -94,22 +85,21 @@ export default function Layout({ user, onLogout, triggerStatus, children }) {
           ))}
         </nav>
 
-
-
         <div className="sidebar-footer">
+          <div className="sidebar-status">
+            <span className={`status-dot ${armed.tone}`} />
+            {armed.text}
+          </div>
           <div className="user-pill">
-            <div className="muted">Signed in as</div>
+            <div className="user-pill__label">Signed in as</div>
             <div className="user-pill__name">{user.name}</div>
           </div>
-          <button className="secondary full-width" onClick={onLogout}>Logout</button>
+          <button className="ghost-btn" onClick={onLogout}>Sign out</button>
         </div>
       </aside>
 
-      <main className="content-area content-area-modern">
-        <div className="page-shell">
-
-          {children}
-        </div>
+      <main className="content-area">
+        <div className="page-shell">{children}</div>
       </main>
     </div>
   );

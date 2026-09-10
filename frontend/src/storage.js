@@ -56,6 +56,7 @@ export function formatCurrency(value) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(safeAmount(value));
 }
@@ -131,3 +132,49 @@ export function formatThreshold(seconds) {
   return `${seconds}s`;
 }
 
+
+/* ------------------------------------------------------------------ *
+ * Financial profile — the inputs the advisor needs that the vault does
+ * not already hold. Kept per account in this browser only; it never
+ * leaves the device and is not part of the legacy report.
+ * ------------------------------------------------------------------ */
+
+const PROFILE_KEY = "quiet_record_financial_profile";
+
+export function getFinancialProfile(userId) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+    return saved[String(userId)] || null;
+  } catch {
+    return null;
+  }
+}
+
+export function setFinancialProfile(userId, profile) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+    saved[String(userId)] = profile;
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(saved));
+  } catch {
+    /* storage unavailable (private window, blocked cookies) — the advisor
+       still works, the profile just does not persist between visits. */
+  }
+}
+
+const trim = (text) => text.replace(/\.0$/, "");
+
+/** Short form for chart axes and dense tables: ₹1.2 Cr, ₹4.5 L, ₹12 K. */
+export function formatCompactCurrency(value) {
+  const amount = safeAmount(value);
+  const sign = amount < 0 ? "-" : "";
+  const abs = Math.abs(amount);
+
+  if (abs >= 1e7) return `${sign}₹${trim((abs / 1e7).toFixed(abs >= 1e8 ? 0 : 1))} Cr`;
+  if (abs >= 1e5) return `${sign}₹${trim((abs / 1e5).toFixed(abs >= 1e6 ? 0 : 1))} L`;
+  if (abs >= 1e3) return `${sign}₹${Math.round(abs / 1e3)} K`;
+  return `${sign}₹${Math.round(abs)}`;
+}
+
+export function formatPercent(value, digits = 0) {
+  return `${safeAmount(value).toFixed(digits)}%`;
+}

@@ -149,12 +149,16 @@ export default function AdvisorPage({ user, records, contacts, triggerStatus, fi
             <p>
               At {profile.age}, on a {RISK_PROFILES[profile.risk].label.toLowerCase()} plan, the glidepath puts{" "}
               {target.equity}% in equity and shifts towards fixed income as {profile.retirementAge} approaches.
-              Bars run left of the line when you are under target and right when over.
+              Bars run left of the line when you are under target and right when over. Measured against the{" "}
+              {formatCurrency(portfolio.investableBase)} you can actually move
+              {portfolio.residence > 0
+                ? `, with the ${formatCurrency(portfolio.residence)} home you live in set aside`
+                : ""}.
             </p>
           </div>
         </div>
 
-        {portfolio.assets > 0 ? (
+        {portfolio.investableBase > 0 ? (
           <>
             <DriftBars rows={drift} formatValue={formatCurrency} />
             <details className="table-view">
@@ -185,14 +189,15 @@ export default function AdvisorPage({ user, records, contacts, triggerStatus, fi
               </div>
             </details>
             <p className="muted tiny top-gap">
-              Receivables are counted as liquid here — they become cash once collected. Rebalance by directing new
-              money at whatever is short, rather than selling what is long; selling can trigger tax and costs.
+              Receivables are counted as liquid here — they become cash once collected. A home marked “self-occupied”
+              is excluded, since you cannot sell part of it to rebalance. Correct the mix by directing new money at
+              whatever is short, rather than selling what is long; selling can trigger tax and costs.
             </p>
           </>
         ) : (
           <div className="empty-state">
-            <strong>No assets recorded</strong>
-            Add your holdings in Records and the target comparison appears here.
+            <strong>Nothing to rebalance yet</strong>
+            Add holdings beyond the home you live in and the target comparison appears here.
           </div>
         )}
       </div>

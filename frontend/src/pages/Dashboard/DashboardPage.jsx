@@ -3,7 +3,7 @@ import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import SuggestionList from "../../components/Guidance/SuggestionList";
 import AllocationBar from "../../components/charts/AllocationBar";
 import ScoreMeter from "../../components/charts/ScoreMeter";
-import { ALLOCATION_ORDER, ASSET_CLASSES, buildAdvice } from "../../advisor";
+import { allocationSegments, buildAdvice } from "../../advisor";
 import { formatCurrency, formatDuration, formatServerDate } from "../../storage";
 import "./DashboardPage.css";
 
@@ -27,11 +27,7 @@ export default function DashboardPage({ user, records, contacts, triggerStatus, 
   const { portfolio, health, plan, profile, suggestions } = advice;
   const firstName = (user.name || "").trim().split(" ")[0] || "there";
 
-  const segments = ALLOCATION_ORDER.map((key) => ({
-    key,
-    label: ASSET_CLASSES[key].label,
-    value: portfolio.totals[key],
-  }));
+  const segments = allocationSegments(portfolio);
 
   const countdown = triggerStatus?.is_triggered
     ? "Released"
@@ -121,7 +117,7 @@ export default function DashboardPage({ user, records, contacts, triggerStatus, 
         <div className="stat-card card accent-assets">
           <span>Invested</span>
           <strong>{formatCurrency(portfolio.totals.equity + portfolio.totals.bonds + portfolio.totals.property)}</strong>
-          <p>Equity, fixed income and property.</p>
+          <p>Equity, fixed income and investment property.</p>
         </div>
         <div className="stat-card card accent-total">
           <span>Cash cushion</span>

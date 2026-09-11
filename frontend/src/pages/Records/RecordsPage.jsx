@@ -163,7 +163,9 @@ export default function RecordsPage({ records, loadRecords }) {
               <textarea id="details" placeholder="Account numbers, contacts, where the paperwork lives…"
                         value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })} />
               <span className="hint">
-                Write an interest rate here — “@ 10.5%” — and the advisor puts this debt in the right payoff order.
+                Two things the advisor reads from this box: an interest rate — “@ 10.5%” — puts a debt in the right
+                payoff order, and “self-occupied” on a property marks it as the home you live in, so it counts towards
+                your net worth but is left out of the rebalancing advice.
               </span>
             </div>
 

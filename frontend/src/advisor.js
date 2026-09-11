@@ -19,6 +19,7 @@ export const ASSET_CLASSES = {
   property: { key: "property", label: "Property", blurb: "Land, housing, real estate", assumedReturn: 0.08 },
   cash: { key: "cash", label: "Cash & savings", blurb: "Bank balances, liquid funds", assumedReturn: 0.04 },
   receivable: { key: "receivable", label: "Receivables", blurb: "Money owed to you", assumedReturn: 0.0 },
+  residence: { key: "residence", label: "Home you live in", blurb: "Counted in net worth, not in the target mix", assumedReturn: 0.08 },
 };
 
 export const ALLOCATION_ORDER = ["equity", "bonds", "property", "cash", "receivable"];
@@ -44,6 +45,7 @@ const CASH_WORDS = /\b(saving|savings|bank|cash|wallet|liquid|emergency|current 
 const FD_WORDS = /\b(fd|fixed deposit|rd|recurring deposit|ppf|epf|nps|debenture|treasury|gilt|debt fund)\b/i;
 const EQUITY_WORDS = /\b(mutual fund|sip|index|etf|nifty|sensex|share|shares|equity|stock|stocks|demat)\b/i;
 const PROPERTY_WORDS = /\b(land|plot|flat|apartment|house|villa|property|real estate)\b/i;
+const RESIDENCE_WORDS = /\b(self[- ]?occupied|primary residence|own residence|main home|i live here|we live here|live in it|home i live in|residence)\b/i;
 
 /* ------------------------------------------------------------------ *
  * Classification
@@ -68,7 +70,7 @@ export function classifyRecord(record) {
     case "bond":
       return "bonds";
     case "property":
-      return "property";
+      return RESIDENCE_WORDS.test(haystack) ? "residence" : "property";
     case "insurance":
       return "protection";
     case "note":
@@ -140,7 +142,7 @@ export function targetAllocation(profile) {
  * ------------------------------------------------------------------ */
 
 export function buildPortfolio(records = []) {
-  const totals = { equity: 0, bonds: 0, property: 0, cash: 0, receivable: 0, liability: 0, protection: 0 };
+  const totals = { equity: 0, bonds: 0, property: 0, residence: 0, cash: 0, receivable: 0, liability: 0, protection: 0 };
   const holdings = [];
   const debts = [];
 
@@ -158,22 +160,31 @@ export function buildPortfolio(records = []) {
     }
   });
 
-  const assets = totals.equity + totals.bonds + totals.property + totals.cash + totals.receivable;
+  const assets =
+    totals.equity + totals.bonds + totals.property + totals.residence + totals.cash + totals.receivable;
   const liabilities = totals.liability;
   const liquid = totals.cash + totals.receivable;
+
+  // A home you live in counts towards net worth but not towards the mix you
+  // are asked to rebalance — you cannot sell a third of the house you sleep in.
+  const investableBase = assets - totals.residence;
+  const investableHoldings = holdings.filter((item) => item.bucket !== "residence");
 
   return {
     totals,
     holdings,
+    investableHoldings,
     debts: sortDebts(debts),
     assets,
+    investableBase,
+    residence: totals.residence,
     liabilities,
     liquid,
     netWorth: assets - liabilities,
     protection: totals.protection,
     debtRatio: assets > 0 ? liabilities / assets : liabilities > 0 ? 1 : 0,
-    actualAllocation: shares(totals, assets),
-    largestHolding: holdings.reduce((top, item) => (!top || item.amount > top.amount ? item : top), null),
+    actualAllocation: shares(displayTotals(totals), assets),
+    largestHolding: investableHoldings.reduce((top, item) => (!top || item.amount > top.amount ? item : top), null),
   };
 }
 
@@ -190,6 +201,21 @@ function sortDebts(debts) {
   });
 }
 
+/** Five display slots; the home is shown inside Property, not as a sixth hue. */
+export function displayTotals(totals) {
+  return { ...totals, property: totals.property + totals.residence };
+}
+
+/** The five slices the allocation bar draws, in validated palette order. */
+export function allocationSegments(portfolio) {
+  const shown = displayTotals(portfolio.totals);
+  return ALLOCATION_ORDER.map((key) => ({
+    key,
+    label: ASSET_CLASSES[key].label,
+    value: shown[key],
+  }));
+}
+
 function shares(totals, assets) {
   if (assets <= 0) return { equity: 0, bonds: 0, property: 0, cash: 0, receivable: 0 };
   return ALLOCATION_ORDER.reduce((acc, key) => {
@@ -200,13 +226,13 @@ function shares(totals, assets) {
 
 /** Actual mix folded into the four classes the target speaks in. */
 export function targetableAllocation(portfolio) {
-  const { totals, assets } = portfolio;
-  if (assets <= 0) return { equity: 0, bonds: 0, property: 0, liquid: 0 };
+  const { totals, investableBase } = portfolio;
+  if (investableBase <= 0) return { equity: 0, bonds: 0, property: 0, liquid: 0 };
   return {
-    equity: (totals.equity / assets) * 100,
-    bonds: (totals.bonds / assets) * 100,
-    property: (totals.property / assets) * 100,
-    liquid: ((totals.cash + totals.receivable) / assets) * 100,
+    equity: (totals.equity / investableBase) * 100,
+    bonds: (totals.bonds / investableBase) * 100,
+    property: (totals.property / investableBase) * 100,
+    liquid: ((totals.cash + totals.receivable) / investableBase) * 100,
   };
 }
 
@@ -262,10 +288,10 @@ export function buildHealthScore({ portfolio, profile, contacts, user, triggerSt
   });
 
   const classesHeld = ALLOCATION_ORDER.filter((key) => portfolio.totals[key] > 0).length;
-  const topShare = portfolio.assets > 0 && portfolio.largestHolding
-    ? portfolio.largestHolding.amount / portfolio.assets
+  const topShare = portfolio.investableBase > 0 && portfolio.largestHolding
+    ? portfolio.largestHolding.amount / portfolio.investableBase
     : 0;
-  const diversification = portfolio.assets <= 0
+  const diversification = portfolio.investableBase <= 0
     ? 0
     : 20 * (0.5 * Math.min(1, classesHeld / 4) + 0.5 * (1 - clamp((topShare - 0.35) / 0.5, 0, 1)));
 
@@ -274,9 +300,9 @@ export function buildHealthScore({ portfolio, profile, contacts, user, triggerSt
     label: "Diversification",
     max: 20,
     score: diversification,
-    detail: portfolio.assets <= 0
-      ? "No assets recorded yet."
-      : `${classesHeld} asset class${classesHeld === 1 ? "" : "es"} held; largest single holding is ${(topShare * 100).toFixed(0)}% of assets.`,
+    detail: portfolio.investableBase <= 0
+      ? "No investable assets recorded yet."
+      : `${classesHeld} asset class${classesHeld === 1 ? "" : "es"} held; largest single holding is ${(topShare * 100).toFixed(0)}% of investable assets.`,
   });
 
   const annualIncome = profile.monthlyIncome * 12;
@@ -449,7 +475,11 @@ export function buildDrift({ portfolio, profile }) {
   const actual = targetableAllocation(portfolio);
 
   return TARGET_ORDER.map((key) => {
-    const label = key === "liquid" ? "Liquid & receivables" : ASSET_CLASSES[key].label;
+    const label = key === "liquid"
+      ? "Liquid & receivables"
+      : key === "property"
+        ? "Investment property"
+        : ASSET_CLASSES[key].label;
     const drift = actual[key] - target[key];
     return {
       key,
@@ -457,7 +487,7 @@ export function buildDrift({ portfolio, profile }) {
       target: target[key],
       actual: actual[key],
       drift,
-      amount: (drift / 100) * portfolio.assets,
+      amount: (drift / 100) * portfolio.investableBase,
     };
   });
 }
@@ -466,7 +496,7 @@ export function buildDrift({ portfolio, profile }) {
  * Suggestions
  * ------------------------------------------------------------------ */
 
-const PRIORITY = { critical: 0, warning: 1, opportunity: 2, info: 3 };
+const PRIORITY = { critical: 0, warning: 1, opportunity: 2, good: 3, info: 4 };
 
 export function buildSuggestions({ portfolio, profile, health, projection, plan, drift, contacts, user, triggerStatus, currency }) {
   const out = [];
@@ -555,7 +585,7 @@ export function buildSuggestions({ portfolio, profile, health, projection, plan,
 
   /* Rebalancing */
   drift
-    .filter((row) => Math.abs(row.drift) >= 8 && portfolio.assets > 0)
+    .filter((row) => Math.abs(row.drift) >= 8 && portfolio.investableBase > 0)
     .sort((a, b) => Math.abs(b.drift) - Math.abs(a.drift))
     .slice(0, 2)
     .forEach((row) => {
@@ -572,18 +602,37 @@ export function buildSuggestions({ portfolio, profile, health, projection, plan,
     });
 
   /* Concentration */
-  if (portfolio.largestHolding && portfolio.assets > 0) {
-    const share = portfolio.largestHolding.amount / portfolio.assets;
+  if (portfolio.largestHolding && portfolio.investableBase > 0) {
+    const share = portfolio.largestHolding.amount / portfolio.investableBase;
     if (share > 0.35 && portfolio.largestHolding.bucket !== "property") {
       add({
         id: "concentration",
         tone: "warning",
-        title: `${portfolio.largestHolding.title} is ${(share * 100).toFixed(0)}% of your assets`,
+        title: `${portfolio.largestHolding.title} is ${(share * 100).toFixed(0)}% of your investable assets`,
         detail:
           "A single holding above a third of everything you own ties your outcome to one company or counterparty. Spread new contributions across other holdings until no single position sits above 20%.",
         metric: `${money(portfolio.largestHolding.amount)} in one position`,
       });
     }
+  }
+
+  /* The home you live in */
+  if (portfolio.residence > 0) {
+    add({
+      id: "residence-noted",
+      tone: "good",
+      title: "Your home counts, but is not asked to rebalance",
+      detail: `${money(portfolio.residence)} of home value sits in your net worth. It is deliberately left out of the target mix — you cannot sell a third of the house you live in — so the rebalancing advice applies only to the ${money(portfolio.investableBase)} you can actually move.`,
+    });
+  } else if (portfolio.totals.property > 0) {
+    add({
+      id: "residence-hint",
+      tone: "info",
+      title: "Do you live in one of these properties?",
+      detail:
+        'All your property is currently treated as an investment, which makes the target mix read as heavily overweight. Write "self-occupied" into the details of the home you live in: it stays in your net worth but drops out of the rebalancing advice.',
+      action: { label: "Mark your home", to: "/records" },
+    });
   }
 
   /* Protection */
@@ -638,14 +687,14 @@ export function buildSuggestions({ portfolio, profile, health, projection, plan,
   }
 
   /* Receivables */
-  if (portfolio.totals.receivable > 0 && portfolio.assets > 0) {
-    const share = portfolio.totals.receivable / portfolio.assets;
+  if (portfolio.totals.receivable > 0 && portfolio.investableBase > 0) {
+    const share = portfolio.totals.receivable / portfolio.investableBase;
     if (share > 0.15) {
       add({
         id: "receivables",
         tone: "warning",
-        title: "A large share of your net worth is money you do not hold",
-        detail: `${(share * 100).toFixed(0)}% of your assets are receivables. They earn nothing while outstanding and depend on someone else paying. Set a date to collect the largest ones and record the outcome.`,
+        title: "A large share of your savings is money you do not hold",
+        detail: `${(share * 100).toFixed(0)}% of your investable assets are receivables. They earn nothing while outstanding and depend on someone else paying. Set a date to collect the largest ones and record the outcome.`,
         metric: `${money(portfolio.totals.receivable)} owed to you`,
         action: { label: "Review receivables", to: "/records" },
       });

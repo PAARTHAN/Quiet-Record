@@ -51,6 +51,11 @@ npm run dev
 - The financial profile behind the advisor (age, income, expenses, dependents,
   risk appetite) is kept in `localStorage` per account. It never reaches the
   server and is not part of the legacy report.
+- Two conventions are read from a record's free-text details: an interest rate
+  (`@ 10.5%`) orders debts by the avalanche method, and `self-occupied` on a
+  property marks the home you live in. A self-occupied home counts towards net
+  worth but is excluded from the target mix and rebalancing advice — you cannot
+  sell part of the house you live in.
 - Trigger thresholds come from `TRIGGER_THRESHOLD_SECONDS` and
   `WARNING_THRESHOLD_SECONDS`; set them low to demo the release quickly.
 - The advisor gives general guidance from arithmetic on the figures you enter.

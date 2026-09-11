@@ -11,8 +11,8 @@ from core.config import TRIGGER_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS, CO
 # Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Galaxio Backend",
-    description="Refactored modular backend for Galaxio.",
+    title="Quiet Record Backend",
+    description="Refactored modular backend for Quiet Record.",
 )
 
 # Setup CORS
@@ -39,7 +39,7 @@ def startup_event():
 @app.get("/", tags=["health"])
 def read_root():
     return {
-        "message": "Galaxio backend is running",
+        "message": "Quiet Record backend is running",
         "trigger_threshold_seconds": TRIGGER_THRESHOLD_SECONDS,
         "warning_threshold_seconds": WARNING_THRESHOLD_SECONDS,
     }

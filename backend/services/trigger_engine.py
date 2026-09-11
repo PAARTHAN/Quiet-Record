@@ -22,10 +22,10 @@ def seconds_since_check_in(user: User) -> int:
     return max(0, int((utc_now() - base_time).total_seconds()))
 
 def release_message(user: User) -> tuple[str, str, str]:
-    subject = f"Galaxio emergency report for {user.name}"
+    subject = f"Quiet Record emergency report for {user.name}"
     body = (
         f"This is an emergency release notification for {user.name}.\n\n"
-        f"A readable Galaxio emergency report is attached to this email.\n"
+        f"A readable Quiet Record emergency report is attached to this email.\n"
         f"Generated at: {to_ist_string(utc_now())}\n"
     )
     filename = f"galaxio_report_user_{user.id}.txt"

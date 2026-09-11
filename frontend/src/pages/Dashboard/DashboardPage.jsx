@@ -29,13 +29,19 @@ export default function DashboardPage({ user, records, contacts, triggerStatus, 
 
   const segments = allocationSegments(portfolio);
 
+  const expired = triggerStatus?.is_timer_active
+    && !triggerStatus?.is_triggered
+    && triggerStatus?.seconds_until_trigger <= 0;
+
   const countdown = triggerStatus?.is_triggered
     ? "Released"
-    : !triggerStatus?.is_timer_active
-      ? "Not armed"
-      : triggerStatus?.seconds_until_trigger !== undefined
-        ? formatDuration(triggerStatus.seconds_until_trigger)
-        : "—";
+    : expired
+      ? "Time up"
+      : !triggerStatus?.is_timer_active
+        ? "Not armed"
+        : triggerStatus?.seconds_until_trigger !== undefined
+          ? formatDuration(triggerStatus.seconds_until_trigger)
+          : "—";
 
   return (
     <>
@@ -101,9 +107,11 @@ export default function DashboardPage({ user, records, contacts, triggerStatus, 
           <p className="muted small">
             {triggerStatus?.is_triggered
               ? "Your records have been released to your trusted circle."
-              : !triggerStatus?.is_timer_active
-                ? "Check in once to arm the inactivity watch."
-                : "Remaining before your records go to your trusted circle."}
+              : expired
+                ? "The clock has run out — the release is going out now."
+                : !triggerStatus?.is_timer_active
+                  ? "Check in once to arm the inactivity watch."
+                  : "Remaining before your records go to your trusted circle."}
           </p>
           <div className="list top-gap">
             <div className="item row-between"><span>Last check-in</span><strong className="small">{formatServerDate(user.last_check_in)}</strong></div>

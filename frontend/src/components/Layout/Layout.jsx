@@ -54,9 +54,11 @@ export default function Layout({ user, onLogout, triggerStatus, children }) {
 
   const armed = triggerStatus?.is_triggered
     ? { tone: "is-fired", text: "Trigger released" }
-    : triggerStatus?.is_timer_active
-      ? { tone: "", text: "Watch armed" }
-      : { tone: "is-idle", text: "Watch not armed" };
+    : triggerStatus?.is_timer_active && triggerStatus?.seconds_until_trigger <= 0
+      ? { tone: "is-fired", text: "Releasing now" }
+      : triggerStatus?.is_timer_active
+        ? { tone: "", text: "Watch armed" }
+        : { tone: "is-idle", text: "Watch not armed" };
 
   return (
     <div className="shell">

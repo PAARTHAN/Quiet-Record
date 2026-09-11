@@ -68,11 +68,17 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
     ? Math.min(100, Math.round((triggerStatus.seconds_since_check_in / triggerStatus.threshold_seconds) * 100))
     : 0;
 
+  const expired = triggerStatus?.is_timer_active
+    && !triggerStatus?.is_triggered
+    && triggerStatus?.seconds_until_trigger <= 0;
+
   const state = triggerStatus?.is_triggered
     ? { tone: "critical", label: "Released" }
-    : triggerStatus?.is_timer_active
-      ? { tone: "good", label: "Armed and watching" }
-      : { tone: "warning", label: "Not armed" };
+    : expired
+      ? { tone: "warning", label: "Releasing now" }
+      : triggerStatus?.is_timer_active
+        ? { tone: "good", label: "Armed and watching" }
+        : { tone: "warning", label: "Not armed" };
 
   return (
     <>
@@ -89,18 +95,22 @@ export default function TriggerPage({ user, setUser, records, contacts, triggerS
           <div className="timer-hero">
             {triggerStatus?.is_triggered
               ? "Released"
-              : !triggerStatus?.is_timer_active
-                ? "Not armed"
-                : triggerStatus?.seconds_until_trigger !== undefined
-                  ? formatDuration(triggerStatus.seconds_until_trigger)
-                  : "—"}
+              : expired
+                ? "Time up"
+                : !triggerStatus?.is_timer_active
+                  ? "Not armed"
+                  : triggerStatus?.seconds_until_trigger !== undefined
+                    ? formatDuration(triggerStatus.seconds_until_trigger)
+                    : "—"}
           </div>
           <p className="muted small">
             {triggerStatus?.is_triggered
               ? "The release has already gone out. Check in to reset the system."
-              : !triggerStatus?.is_timer_active
-                ? "Check in once and the watch begins."
-                : "Until the release goes out automatically."}
+              : expired
+                ? "The clock has run out. The release is going out now — check in if this is a mistake."
+                : !triggerStatus?.is_timer_active
+                  ? "Check in once and the watch begins."
+                  : "Until the release goes out automatically."}
           </p>
 
           <div className="progress-shell top-gap">

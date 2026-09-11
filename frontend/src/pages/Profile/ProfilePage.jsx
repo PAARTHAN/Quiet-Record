@@ -16,10 +16,10 @@ export default function ProfilePage({ user, records, contacts, triggerStatus, se
         method: "PUT",
         body: JSON.stringify({ last_message: lastMessage }),
       });
-      setSaveStatus("Saved. This travels with your report.");
+      setSaveStatus("Saved. This will go with your list.");
       if (setUser) setUser({ ...user, last_message: lastMessage });
     } catch {
-      setSaveStatus("Could not save the message.");
+      setSaveStatus("Sorry, that did not save. Please try again.");
     }
     setTimeout(() => setSaveStatus(""), 4000);
   }
@@ -27,30 +27,29 @@ export default function ProfilePage({ user, records, contacts, triggerStatus, se
   return (
     <>
       <SectionHeader
-        eyebrow="Your account"
-        title="Profile"
-        description="Who you are on this record, what it holds in total, and the message that goes with it."
+        title="My account"
+        description="Your details, what your list adds up to, and the message that would go with it."
       />
 
       <div className="grid-2">
         <div className="card">
           <div className="card-head">
             <div>
-              <h2>Account</h2>
-              <p>Held on the server against your login.</p>
+              <h2>Your details</h2>
+              <p>How you sign in.</p>
             </div>
           </div>
           <div className="list">
             <div className="item row-between"><span>Name</span><strong>{user.name}</strong></div>
             <div className="item row-between"><span>Email</span><strong className="small">{user.email}</strong></div>
-            <div className="item row-between"><span>Last check-in</span><strong className="small">{formatServerDate(user.last_check_in)}</strong></div>
+            <div className="item row-between"><span>You last checked in</span><strong className="small">{formatServerDate(user.last_check_in)}</strong></div>
             <div className="item row-between">
-              <span>Warning notice</span>
-              <strong>{triggerStatus?.warning_sent ? "Sent" : "Not sent"}</strong>
+              <span>Have we warned you?</span>
+              <strong>{triggerStatus?.warning_sent ? "Yes" : "No"}</strong>
             </div>
             <div className="item row-between">
-              <span>Watch state</span>
-              <strong>{user.is_triggered ? "Released" : triggerStatus?.is_timer_active ? "Armed" : "Not armed"}</strong>
+              <span>Safety check</span>
+              <strong>{user.is_triggered ? "Already sent" : triggerStatus?.is_timer_active ? "On" : "Off"}</strong>
             </div>
           </div>
         </div>
@@ -58,19 +57,19 @@ export default function ProfilePage({ user, records, contacts, triggerStatus, se
         <div className="card">
           <div className="card-head">
             <div>
-              <h2>What the record holds</h2>
-              <p>Totals across {records.length} entries.</p>
+              <h2>What it all adds up to</h2>
+              <p>Across the {records.length} things you have listed.</p>
             </div>
-            <span className="badge">{formatCurrency(portfolio.netWorth)} net</span>
+            <span className="badge">Worth {formatCurrency(portfolio.netWorth)}</span>
           </div>
 
           <div className="summary-grid">
             <div className="summary-tile">
-              <span>Assets</span>
+              <span>You own</span>
               <strong className="figure is-asset">{formatCurrency(portfolio.assets)}</strong>
             </div>
             <div className="summary-tile">
-              <span>Liabilities</span>
+              <span>You owe</span>
               <strong className="figure is-debt">{formatCurrency(portfolio.liabilities)}</strong>
             </div>
             <div className="summary-tile">
@@ -80,9 +79,9 @@ export default function ProfilePage({ user, records, contacts, triggerStatus, se
           </div>
 
           <div className="list top-gap">
-            <div className="item row-between"><span>Records in the vault</span><strong>{records.length}</strong></div>
-            <div className="item row-between"><span>Trusted contacts</span><strong>{contacts.length}</strong></div>
-            <div className="item row-between"><span>Insurance recorded</span><strong>{formatCurrency(portfolio.protection)}</strong></div>
+            <div className="item row-between"><span>Things on your list</span><strong>{records.length}</strong></div>
+            <div className="item row-between"><span>People you trust</span><strong>{contacts.length}</strong></div>
+            <div className="item row-between"><span>Insurance listed</span><strong>{formatCurrency(portfolio.protection)}</strong></div>
           </div>
         </div>
       </div>
@@ -90,10 +89,10 @@ export default function ProfilePage({ user, records, contacts, triggerStatus, se
       <div className="card">
         <div className="card-head">
           <div>
-            <h2>Your final message</h2>
+            <h2>Your message to them</h2>
             <p>
-              The records say what you owned. This says what you meant. It appears at the top of the report your
-              trusted contacts receive.
+              Your list tells them what you had. This tells them what you meant. It goes at the top of what they
+              are sent. Write it however you like.
             </p>
           </div>
         </div>
@@ -105,7 +104,7 @@ export default function ProfilePage({ user, records, contacts, triggerStatus, se
           rows="8"
         />
         <div className="action-row top-gap">
-          <button onClick={handleSaveLastMessage}>Save message</button>
+          <button onClick={handleSaveLastMessage}>Save this</button>
           {saveStatus ? <div className="notice success">{saveStatus}</div> : null}
         </div>
       </div>
@@ -113,14 +112,14 @@ export default function ProfilePage({ user, records, contacts, triggerStatus, se
       <div className="card">
         <div className="card-head">
           <div>
-            <h2>Who receives it</h2>
-            <p>Everyone currently in your trusted circle.</p>
+            <h2>Who would get it</h2>
+            <p>Everyone you have named so far.</p>
           </div>
         </div>
         {contacts.length === 0 ? (
           <div className="empty-state">
             <strong>Nobody yet</strong>
-            Without a contact, nothing is released to anyone.
+            Until you name someone, none of this would reach anyone.
           </div>
         ) : (
           <div className="recipient-grid">

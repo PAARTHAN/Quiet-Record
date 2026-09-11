@@ -40,11 +40,14 @@ export default function DriftBars({ rows, formatValue }) {
 
             <div className="drift-values">
               <span className="drift-delta" style={{ color: AXIS_TEXT }}>
-                {onTarget ? "on target" : `${under ? "−" : "+"}${Math.abs(row.drift).toFixed(0)} pts`}
+                {onTarget
+                  ? "About right"
+                  : under
+                    ? `${formatValue(Math.abs(row.amount))} less than usual`
+                    : `${formatValue(Math.abs(row.amount))} more than usual`}
               </span>
               <span className="drift-amount">
-                {row.actual.toFixed(0)}% held · {row.target}% target
-                {onTarget ? "" : ` · ${formatValue(Math.abs(row.amount))} ${under ? "short" : "over"}`}
+                You have {row.actual.toFixed(0)} in every 100; most people your age have about {row.target}
               </span>
             </div>
           </div>

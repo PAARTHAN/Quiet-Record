@@ -22,10 +22,10 @@ export default function ContactsPage({ contacts, loadContacts }) {
   const [confirmId, setConfirmId] = useState(null);
 
   const readiness = contacts.length === 0
-    ? { label: "Unreachable", tone: "critical", note: "Nothing will be released — there is nobody to release it to." }
+    ? { label: "Nobody listed", tone: "critical", note: "Right now nothing would be sent to anyone, because you have not named a single person." }
     : contacts.length < 2
-      ? { label: "Single point of failure", tone: "warning", note: "One contact means one thing has to go right. Add a second." }
-      : { label: "Ready", tone: "good", note: "Enough people to make the release reliable." };
+      ? { label: "Only one person", tone: "warning", note: "If this one person cannot be reached, nobody can. It is worth adding a second." }
+      : { label: "All set", tone: "good", note: "Enough people that your list would reach someone." };
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -71,9 +71,8 @@ export default function ContactsPage({ contacts, loadContacts }) {
   return (
     <>
       <SectionHeader
-        eyebrow="The trusted circle"
-        title="Trusted contacts"
-        description="The people who receive your legacy report if you become unreachable. They see nothing until that moment."
+        title="People I trust"
+        description="If something happens to you and you stop checking in, these are the people who would be sent your list. Until then they are told nothing at all."
         action={<span className={`badge ${readiness.tone}`}>{readiness.label}</span>}
       />
 
@@ -83,27 +82,27 @@ export default function ContactsPage({ contacts, loadContacts }) {
         <form className="card contact-form" onSubmit={handleSubmit}>
           <div className="section-header compact">
             <div>
-              <h1>{editingId ? "Edit contact" : "Add a contact"}</h1>
-              <p>Someone who would act on your behalf.</p>
+              <h1>{editingId ? "Change this person" : "Add someone"}</h1>
+              <p>Someone who would sort things out for you.</p>
             </div>
           </div>
 
           <div className="form-grid top-gap">
             <div className="field">
-              <label htmlFor="name">Full name</label>
+              <label htmlFor="name">Their name</label>
               <input id="name" placeholder="e.g. Anita Rao" value={form.name}
                      onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[^a-zA-Z ]/g, "") })}
                      pattern="[A-Za-z ]+" title="Letters and spaces only" required />
             </div>
 
             <div className="field">
-              <label htmlFor="email">Email address</label>
+              <label htmlFor="email">Their email</label>
               <input id="email" type="email" placeholder="anita@example.com" value={form.email}
                      onChange={(e) => setForm({ ...form, email: e.target.value })} required />
             </div>
 
             <div className="field">
-              <label htmlFor="phone">Phone, with country code</label>
+              <label htmlFor="phone">Their phone number, with country code</label>
               <input
                 id="phone"
                 placeholder="+919876543210"
@@ -121,18 +120,18 @@ export default function ContactsPage({ contacts, loadContacts }) {
                 }}
                 required
               />
-              <span className="hint">The release goes out by SMS as well as email.</span>
+              <span className="hint">They would get a text message as well as an email.</span>
             </div>
 
             <div className="field">
-              <label htmlFor="relationship">Relationship</label>
+              <label htmlFor="relationship">Who are they to you?</label>
               <input id="relationship" placeholder="Sister, solicitor, friend…" value={form.relationship}
                      onChange={(e) => setForm({ ...form, relationship: e.target.value.replace(/[^a-zA-Z ]/g, "") })}
                      maxLength="40" />
             </div>
 
             <div className="action-row">
-              <button type="submit">{editingId ? "Save changes" : "Add contact"}</button>
+              <button type="submit">{editingId ? "Save" : "Add them"}</button>
               <button type="button" className="secondary" onClick={() => { setForm(emptyContact); setEditingId(null); }}>
                 {editingId ? "Cancel" : "Clear"}
               </button>
@@ -146,15 +145,15 @@ export default function ContactsPage({ contacts, loadContacts }) {
           <div className="card">
             <div className="card-head">
               <div>
-                <h2>Your circle</h2>
-                <p>{contacts.length} {contacts.length === 1 ? "person" : "people"} registered.</p>
+                <h2>The people you have named</h2>
+                <p>{contacts.length} {contacts.length === 1 ? "person" : "people"} so far.</p>
               </div>
             </div>
 
             {contacts.length === 0 ? (
               <div className="empty-state">
-                <strong>No one is listed</strong>
-                Add at least two people so a single unreachable contact does not break the chain.
+                <strong>Nobody yet</strong>
+                Add at least two people, so that if one cannot be reached the other still can.
               </div>
             ) : (
               <ul className="contact-list">
@@ -189,19 +188,19 @@ export default function ContactsPage({ contacts, loadContacts }) {
           </div>
 
           <div className="card card-sunk">
-            <h2>How the release works</h2>
+            <h2>What actually happens</h2>
             <ol className="how-list">
               <li>
-                <strong>Nothing is shared while you check in.</strong> Your contacts are stored, but they are told
-                nothing and can see nothing.
+                <strong>While you are around, nothing happens.</strong> These people are just names on a list.
+                They are not contacted and cannot see anything.
               </li>
               <li>
-                <strong>A warning goes to you first.</strong> If you fall silent, you get a warning before anything
-                is sent to anyone else.
+                <strong>You get warned first.</strong> If you stop checking in, we email you before anybody else
+                hears a thing.
               </li>
               <li>
-                <strong>Then the report goes out.</strong> Each contact receives a secure link by SMS and email to
-                your records, your final message, and the counterparties they will need to reach.
+                <strong>Only then is it sent.</strong> Each person gets a text and an email with your list, your
+                message to them, and who they need to contact about each thing.
               </li>
             </ol>
           </div>

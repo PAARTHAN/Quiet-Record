@@ -2,9 +2,8 @@ import { Link } from "react-router-dom";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import SuggestionList from "../../components/Guidance/SuggestionList";
 import AllocationBar from "../../components/charts/AllocationBar";
-import ScoreMeter from "../../components/charts/ScoreMeter";
 import { allocationSegments, buildAdvice } from "../../advisor";
-import { formatCurrency, formatDuration, formatServerDate } from "../../storage";
+import { formatCurrency, formatDuration } from "../../storage";
 import "./DashboardPage.css";
 
 function greeting() {
@@ -16,29 +15,24 @@ function greeting() {
 
 export default function DashboardPage({ user, records, contacts, triggerStatus, financialProfile }) {
   const advice = buildAdvice({
-    records,
-    contacts,
-    user,
-    triggerStatus,
+    records, contacts, user, triggerStatus,
     profile: financialProfile,
     currency: formatCurrency,
   });
 
-  const { portfolio, health, plan, profile, suggestions } = advice;
+  const { portfolio, health, profile, suggestions } = advice;
   const firstName = (user.name || "").trim().split(" ")[0] || "there";
-
-  const segments = allocationSegments(portfolio);
 
   const expired = triggerStatus?.is_timer_active
     && !triggerStatus?.is_triggered
     && triggerStatus?.seconds_until_trigger <= 0;
 
   const countdown = triggerStatus?.is_triggered
-    ? "Released"
+    ? "Sent"
     : expired
       ? "Time up"
       : !triggerStatus?.is_timer_active
-        ? "Not armed"
+        ? "Off"
         : triggerStatus?.seconds_until_trigger !== undefined
           ? formatDuration(triggerStatus.seconds_until_trigger)
           : "—";
@@ -46,211 +40,108 @@ export default function DashboardPage({ user, records, contacts, triggerStatus, 
   return (
     <>
       <SectionHeader
-        eyebrow="Overview"
         title={`${greeting()}, ${firstName}`}
-        description="Where your money stands today, what it is doing, and the next thing worth doing about it."
-        action={<Link className="btn" to="/advisor">Open the full plan</Link>}
+        description="Here is where your money stands today, and the one thing most worth doing about it."
       />
 
       {!profile.isComplete ? (
         <div className="notice warning dash-prompt">
           <div>
-            <strong>Three of the five health pillars are unmeasured.</strong> Add your monthly income and
-            expenses and the emergency fund, savings rate, monthly plan and retirement projection all come to life.
+            <strong>Two numbers would make this much more useful.</strong> Tell us what you earn and what
+            you spend each month, and we can say how much to save and whether you will have enough later.
           </div>
-          <Link className="btn gold" to="/advisor">Complete profile</Link>
+          <Link className="btn gold" to="/advisor">Add them</Link>
         </div>
       ) : null}
 
-      <div className="dash-hero">
-        <div className="card card-ledger dash-networth">
-          <span className="eyebrow">Net worth</span>
+      <div className="dash-top">
+        <div className="card card-ledger dash-worth">
+          <span className="eyebrow">Everything you own, less everything you owe</span>
           <div className={`hero-figure ${portfolio.netWorth < 0 ? "is-negative" : ""}`}>
             {formatCurrency(portfolio.netWorth)}
           </div>
-          <p className="muted small">
-            {formatCurrency(portfolio.assets)} in assets less {formatCurrency(portfolio.liabilities)} owed,
-            across {records.length} record{records.length === 1 ? "" : "s"}.
-          </p>
-          <div className="networth-split">
+          <p className="muted">That is what you are worth today, across {records.length} thing{records.length === 1 ? "" : "s"} you have listed.</p>
+
+          <div className="worth-split">
             <div>
-              <span>Assets</span>
-              <strong className="figure">{formatCurrency(portfolio.assets)}</strong>
+              <span>You own</span>
+              <strong>{formatCurrency(portfolio.assets)}</strong>
             </div>
             <div>
-              <span>Liabilities</span>
-              <strong className="figure is-liability">{formatCurrency(portfolio.liabilities)}</strong>
+              <span>You owe</span>
+              <strong className="is-owed">{formatCurrency(portfolio.liabilities)}</strong>
+            </div>
+            <div>
+              <span>Cash you can use now</span>
+              <strong>{formatCurrency(portfolio.totals.cash)}</strong>
             </div>
           </div>
         </div>
 
-        <div className="card">
-          <div className="card-head">
-            <div>
-              <h2>Financial health</h2>
-              <p>{health.measuredCount} of {health.totalCount} pillars measured</p>
-            </div>
+        <div className="card dash-health">
+          <h2>How you are doing</h2>
+          <div className={`health-word tone-${health.tone}`}>{health.grade}</div>
+          <p className="muted">{health.label}.</p>
+          <div className="meter-track dash-health__meter">
+            <div className={`meter-fill tone-${health.tone}`} style={{ width: `${health.score}%` }} />
           </div>
-          <ScoreMeter
-            score={health.score}
-            grade={health.grade}
-            label={health.label}
-            tone={health.tone}
-            caption="Emergency fund, debt load, savings rate, diversification and protection, weighted equally."
-          />
-          <Link className="link-btn dash-inline-link" to="/advisor">See how it breaks down →</Link>
-        </div>
-
-        <div className="card dash-watch">
-          <span className="eyebrow">Safety trigger</span>
-          <div className="timer-hero">{countdown}</div>
           <p className="muted small">
-            {triggerStatus?.is_triggered
-              ? "Your records have been released to your trusted circle."
-              : expired
-                ? "The clock has run out — the release is going out now."
-                : !triggerStatus?.is_timer_active
-                  ? "Check in once to arm the inactivity watch."
-                  : "Remaining before your records go to your trusted circle."}
+            We look at five things: emergency money, what you owe, how much you keep,
+            whether your money is spread out, and whether anyone could find it.
           </p>
-          <div className="list top-gap">
-            <div className="item row-between"><span>Last check-in</span><strong className="small">{formatServerDate(user.last_check_in)}</strong></div>
-            <div className="item row-between"><span>Trusted contacts</span><strong>{contacts.length}</strong></div>
-          </div>
-          <Link className="link-btn dash-inline-link" to="/trigger">Manage the trigger →</Link>
+          <Link className="btn dash-health__cta" to="/advisor">See what to do</Link>
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card card accent-assets">
-          <span>Invested</span>
-          <strong>{formatCurrency(portfolio.totals.equity + portfolio.totals.bonds + portfolio.totals.property)}</strong>
-          <p>Equity, fixed income and investment property.</p>
+      <div className="card">
+        <div className="card-head">
+          <div>
+            <h2>Where your money is</h2>
+            <p>Everything you own, by the kind of thing it is.</p>
+          </div>
         </div>
-        <div className="stat-card card accent-total">
-          <span>Cash cushion</span>
-          <strong>{formatCurrency(portfolio.totals.cash)}</strong>
-          <p>
-            {health.monthsCovered === null
-              ? "Add expenses to see months of cover."
-              : `${health.monthsCovered.toFixed(1)} months of expenses.`}
-          </p>
-        </div>
-        <div className="stat-card card accent-lent">
-          <span>Owed to you</span>
-          <strong>{formatCurrency(portfolio.totals.receivable)}</strong>
-          <p>Receivables still to be collected.</p>
-        </div>
-        <div className="stat-card card accent-plan">
-          <span>Monthly surplus</span>
-          <strong>{plan ? formatCurrency(plan.surplus) : "—"}</strong>
-          <p>
-            {plan
-              ? `${(plan.savingsRate * 100).toFixed(0)}% of income kept back.`
-              : "Income and expenses not set."}
-          </p>
-        </div>
+        <AllocationBar segments={allocationSegments(portfolio)} total={portfolio.assets} formatValue={formatCurrency} />
       </div>
 
       <div className="split-main">
-        <div className="stack">
-          <div className="card">
-            <div className="card-head">
-              <div>
-                <h2>How your money is spread</h2>
-                <p>Every recorded asset, by class.</p>
-              </div>
-              <Link className="link-btn" to="/advisor">Target mix →</Link>
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <h2>What to do next</h2>
+              <p>Most important first. All of it worked out from what you have listed.</p>
             </div>
-            <AllocationBar segments={segments} total={portfolio.assets} formatValue={formatCurrency} />
           </div>
-
-          <div className="card">
-            <div className="card-head">
-              <div>
-                <h2>What to do next</h2>
-                <p>Ordered by urgency, computed from your own records.</p>
-              </div>
-              <span className="pill-muted">{suggestions.length} in total</span>
-            </div>
-            <SuggestionList
-              suggestions={suggestions}
-              limit={4}
-              emptyText="Nothing pressing. Add records to sharpen the guidance."
-            />
-            {suggestions.length > 4 ? (
-              <Link className="link-btn top-gap" to="/advisor">
-                See all {suggestions.length} recommendations →
-              </Link>
-            ) : null}
-          </div>
+          <SuggestionList
+            suggestions={suggestions}
+            limit={3}
+            emptyText="Nothing needs doing right now."
+          />
+          {suggestions.length > 3 ? (
+            <Link className="link-btn top-gap" to="/advisor">
+              See all {suggestions.length} things →
+            </Link>
+          ) : null}
         </div>
 
-        <div className="stack">
-          {plan ? (
-            <div className="card">
-              <div className="card-head">
-                <div>
-                  <h2>This month</h2>
-                  <p>Where your {formatCurrency(plan.surplus)} surplus should go.</p>
-                </div>
-              </div>
-              <div className="list">
-                {plan.buckets.map((bucket) => (
-                  <div className="item" key={bucket.key}>
-                    <div className="row-between">
-                      <span>{bucket.label}</span>
-                      <strong className="figure">{formatCurrency(bucket.amount)}</strong>
-                    </div>
-                    <p className="muted tiny">{bucket.note}</p>
-                  </div>
-                ))}
-              </div>
-              <Link className="link-btn top-gap" to="/advisor">Full monthly plan →</Link>
+        <div className="card dash-safety">
+          <h2>Safety check</h2>
+          <div className="timer-hero">{countdown}</div>
+          <p className="muted small">
+            {triggerStatus?.is_triggered
+              ? "Your list has been sent to the people you trust."
+              : expired
+                ? "The clock ran out. Your list is being sent now."
+                : !triggerStatus?.is_timer_active
+                  ? "Switched off. Press the button once to start it."
+                  : "Left before your list is sent to the people you trust, if you go quiet."}
+          </p>
+          <div className="list top-gap">
+            <div className="item row-between">
+              <span>People who would be told</span>
+              <strong>{contacts.length}</strong>
             </div>
-          ) : (
-            <div className="card">
-              <h2>This month</h2>
-              <p className="muted small top-gap">
-                Once your income and expenses are recorded, this becomes a monthly instruction: how much to
-                hold back, how much to send at debt, and how much to invest.
-              </p>
-              <Link className="btn top-gap" to="/advisor">Set it up</Link>
-            </div>
-          )}
-
-          <div className="card">
-            <div className="card-head">
-              <div>
-                <h2>Recent records</h2>
-                <p>{records.length} in the vault.</p>
-              </div>
-            </div>
-            {records.length === 0 ? (
-              <div className="empty-state">
-                <strong>The vault is empty</strong>
-                Add what you own and owe to begin.
-              </div>
-            ) : (
-              <div className="list">
-                {records.slice(0, 5).map((item) => (
-                  <div className="item recent-record" key={item.id}>
-                    <div className="row-between align-start">
-                      <div className="flex-1">
-                        <strong>{item.title}</strong>
-                        <div className="muted tiny">{item.owner || "No counterparty recorded"}</div>
-                      </div>
-                      <div className="recent-record__right">
-                        <span className="figure">{formatCurrency(item.amount)}</span>
-                        <span className="badge plain">{item.category || "Other"}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <Link className="link-btn top-gap" to="/records">Open the vault →</Link>
           </div>
+          <Link className="btn secondary dash-safety__cta" to="/trigger">Open safety check</Link>
         </div>
       </div>
     </>

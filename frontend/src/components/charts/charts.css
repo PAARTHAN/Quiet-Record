@@ -10,12 +10,10 @@
   color: var(--muted);
 }
 
-/* Headroom for the hover tooltip, which sits above the bar. */
-.allocation-shell { padding-top: 4rem; }
-/* Anchored to the bar's top edge and lifted by its own height, so the reserved
-   headroom holds it whether it wraps to one line or two. */
+/* The tooltip floats above the bar and over whatever text sits above it,
+   rather than reserving a band of empty card. */
 .allocation-shell .chart-tooltip {
-  top: 4rem;
+  top: 0;
   transform: translate(-50%, -100%);
   margin-top: -0.5rem;
 }

@@ -18,7 +18,7 @@ export default function AuthPage({ onLogin }) {
         const payload = { ...form, name: form.name.trim(), email: form.email.trim().toLowerCase() };
         await apiFetch("/register", { method: "POST", body: JSON.stringify(payload) });
         setMode("login");
-        setMessage("Account created. Sign in to continue.");
+        setMessage("Account created. Now sign in.");
         setLoading(false);
         return;
       }
@@ -67,21 +67,21 @@ export default function AuthPage({ onLogin }) {
         <div className="auth-hero__inner">
           <div className="auth-mark">
             Quiet Record
-            <em>Est. for the things that outlast us</em>
+            <em>Your money, in one place</em>
           </div>
 
-          <h1>A ledger for your whole financial life — and a hand on it when yours is gone.</h1>
+          <h1>Everything you own, written down once — and passed on if you are not there to explain it.</h1>
 
           <p>
-            Keep what you own, what you owe and what is owed to you in one clear record. Get honest guidance on
-            managing it while you are here. And know that if you ever fall silent, the people you trust will
-            receive it all, in order, without a search.
+            Most families lose track of what someone had. A bank account nobody knew about, a policy nobody
+            claimed, a loan nobody repaid. Write it down once here, get plain advice on what to do with it while
+            you are around, and know that the people you trust will be given all of it if you are not.
           </p>
 
           <ul className="auth-points">
-            <li><strong>The ledger.</strong> Debts, receivables, policies, property, holdings — all in one place.</li>
-            <li><strong>The advisor.</strong> Your net worth, health score, target mix and a monthly plan, worked from your own figures.</li>
-            <li><strong>The watch.</strong> A quiet inactivity timer that hands everything to your trusted circle if it ever runs out.</li>
+            <li><strong>Write it down.</strong> Savings, loans, insurance, property, money people owe you.</li>
+            <li><strong>Know what to do.</strong> What you are worth, how you are doing, and what to do with your money each month — in plain words.</li>
+            <li><strong>Pass it on.</strong> If you ever stop checking in, everything goes to the people you name.</li>
           </ul>
         </div>
       </section>
@@ -102,14 +102,14 @@ export default function AuthPage({ onLogin }) {
           <div className="section-header compact auth-heading">
             <div>
               <h1>
-                {mode === "register" ? "Open your record" : mode === "forgot" ? "Reset your password" : "Welcome back"}
+                {mode === "register" ? "Create your account" : mode === "forgot" ? "Forgotten password" : "Welcome back"}
               </h1>
               <p>
                 {mode === "register"
-                  ? "A few seconds to start; the record grows with you."
+                  ? "It takes a minute. You can add things as you go."
                   : mode === "forgot"
-                    ? "We will send a reset link to your email."
-                    : "Sign in to your private workspace."}
+                    ? "We will email you a link to set a new one."
+                    : "Sign in to see your list."}
               </p>
             </div>
           </div>
@@ -117,18 +117,18 @@ export default function AuthPage({ onLogin }) {
           {mode === "forgot" ? (
             <form className="form-grid" onSubmit={handleForgotPassword}>
               <div className="field">
-                <label htmlFor="reset-email">Email address</label>
+                <label htmlFor="reset-email">Your email</label>
                 <input id="reset-email" type="email" value={form.email}
                        onChange={(e) => setForm({ ...form, email: e.target.value })} required />
               </div>
-              <button type="submit" disabled={loading}>{loading ? "Sending…" : "Send reset link"}</button>
+              <button type="submit" disabled={loading}>{loading ? "Sending…" : "Email me a link"}</button>
               <button className="link-btn" type="button" onClick={() => setMode("login")}>Back to sign in</button>
             </form>
           ) : (
             <form className="form-grid" onSubmit={handleSubmit}>
               {mode === "register" ? (
                 <div className="field">
-                  <label htmlFor="name">Full name</label>
+                  <label htmlFor="name">Your name</label>
                   <input id="name" value={form.name}
                          onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[^a-zA-Z ]/g, "") })}
                          pattern="[A-Za-z ]+" title="Letters and spaces only" required />
@@ -136,16 +136,16 @@ export default function AuthPage({ onLogin }) {
               ) : null}
 
               <div className="field">
-                <label htmlFor="email">Email address</label>
+                <label htmlFor="email">Your email</label>
                 <input id="email" type="email" value={form.email}
                        onChange={(e) => setForm({ ...form, email: e.target.value })} required />
               </div>
 
               <div className="field">
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">A password</label>
                 <input id="password" type="password" minLength="8" value={form.password}
                        onChange={(e) => setForm({ ...form, password: e.target.value })} required />
-                {mode === "register" ? <span className="hint">At least eight characters.</span> : null}
+                {mode === "register" ? <span className="hint">At least eight letters or numbers.</span> : null}
               </div>
 
               {mode === "login" ? (
@@ -155,7 +155,7 @@ export default function AuthPage({ onLogin }) {
               ) : null}
 
               <button type="submit" disabled={loading}>
-                {loading ? "Please wait…" : mode === "register" ? "Create account" : "Sign in"}
+                {loading ? "Please wait…" : mode === "register" ? "Create my account" : "Sign in"}
               </button>
             </form>
           )}
@@ -164,7 +164,7 @@ export default function AuthPage({ onLogin }) {
         </div>
 
         <p className="auth-footnote">
-          Your records are stored against your account and released only by the trigger you control.
+          Only you can see your list. Nothing is sent to anyone unless you stop checking in.
         </p>
       </section>
     </div>

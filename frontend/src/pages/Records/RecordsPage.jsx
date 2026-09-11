@@ -6,15 +6,15 @@ import { ASSET_CLASSES, classifyRecord, parseRate } from "../../advisor";
 import "./RecordsPage.css";
 
 const categoryOptions = [
-  "Debt",
-  "Money Owed To Me",
-  "Insurance",
-  "Stock",
-  "Bond",
-  "Bill",
-  "Property",
-  "Note",
-  "Other",
+  { value: "Debt", label: "Money I owe" },
+  { value: "Money Owed To Me", label: "Money owed to me" },
+  { value: "Stock", label: "Shares or mutual funds" },
+  { value: "Bond", label: "FD, PPF or bonds" },
+  { value: "Property", label: "Property or land" },
+  { value: "Insurance", label: "Insurance" },
+  { value: "Bill", label: "A regular bill" },
+  { value: "Note", label: "Just a note" },
+  { value: "Other", label: "Something else" },
 ];
 
 const BUCKET_LABELS = {
@@ -114,64 +114,63 @@ export default function RecordsPage({ records, loadRecords }) {
   return (
     <>
       <SectionHeader
-        eyebrow="The vault"
-        title="Records"
-        description="Everything you own and owe, entered once. The advisor reads this ledger, and so will your trusted circle."
-        action={<span className="pill-muted">{records.length} entries</span>}
+        title="My money"
+        description="Everything you own and everything you owe, written down once. This is the list the advice is built from, and the list your people would be given."
+        action={<span className="pill-muted">{records.length} listed</span>}
       />
 
       <div className="split-form">
         <form className="card record-form" onSubmit={handleSubmit}>
           <div className="section-header compact">
             <div>
-              <h1>{editingId ? "Edit record" : "New record"}</h1>
-              <p>Stored against your account only.</p>
+              <h1>{editingId ? "Change this" : "Add something"}</h1>
+              <p>Only you can see this.</p>
             </div>
           </div>
 
           <div className="form-grid top-gap">
             <div className="field">
-              <label htmlFor="category">Category</label>
+              <label htmlFor="category">What kind of thing is it?</label>
               <select id="category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
                 {categoryOptions.map((option) => (
-                  <option key={option} value={option}>{option}</option>
+                  <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
               </select>
             </div>
 
             <div className="field">
-              <label htmlFor="title">Title</label>
+              <label htmlFor="title">What is it called?</label>
               <input id="title" placeholder="e.g. HDFC home loan" value={form.title}
                      onChange={(e) => setForm({ ...form, title: e.target.value })} maxLength="80" required />
             </div>
 
             <div className="two-col">
               <div className="field field-prefixed">
-                <label htmlFor="amount">Amount</label>
+                <label htmlFor="amount">How much is it worth?</label>
                 <input id="amount" inputMode="decimal" placeholder="0" value={form.amount}
                        onChange={(e) => setForm({ ...form, amount: e.target.value.replace(/[^\d.]/g, "") })} />
               </div>
               <div className="field">
-                <label htmlFor="owner">Person / company</label>
-                <input id="owner" placeholder="Counterparty" value={form.owner}
+                <label htmlFor="owner">Who is it with?</label>
+                <input id="owner" placeholder="Bank, company or person" value={form.owner}
                        onChange={(e) => setForm({ ...form, owner: e.target.value })} maxLength="60" />
               </div>
             </div>
 
             <div className="field">
-              <label htmlFor="details">Details</label>
-              <textarea id="details" placeholder="Account numbers, contacts, where the paperwork lives…"
+              <label htmlFor="details">Anything else worth knowing</label>
+              <textarea id="details" placeholder="Account number, a phone number, where the papers are kept…"
                         value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })} />
               <span className="hint">
-                Two things the advisor reads from this box: an interest rate — “@ 10.5%” — puts a debt in the right
-                payoff order, and “self-occupied” on a property marks it as the home you live in, so it counts towards
-                your net worth but is left out of the rebalancing advice.
+                Two things we look for here. Write “@ 10.5%” on a loan and we can tell you which one to clear
+                first. Write “self-occupied” on the place you live and we will stop suggesting you move money out
+                of your own home.
               </span>
             </div>
 
             <div className="action-row">
               <button type="submit" disabled={saving}>
-                {saving ? "Saving…" : editingId ? "Save changes" : "Add record"}
+                {saving ? "Saving…" : editingId ? "Save" : "Add it"}
               </button>
               <button type="button" className="secondary" onClick={resetForm}>
                 {editingId ? "Cancel" : "Clear"}
@@ -185,14 +184,14 @@ export default function RecordsPage({ records, loadRecords }) {
         <div className="card">
           <div className="card-head wrap">
             <div>
-              <h2>The ledger</h2>
+              <h2>Your list</h2>
               <p>
-                {filteredRecords.length} of {records.length} shown · {formatCurrency(total)} is the raw sum of the amounts listed, assets and debts alike
+                Showing {filteredRecords.length} of {records.length}
               </p>
             </div>
             <input
               className="record-search"
-              placeholder="Search titles, people, notes…"
+              placeholder="Search…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -200,20 +199,20 @@ export default function RecordsPage({ records, loadRecords }) {
 
           {filteredRecords.length === 0 ? (
             <div className="empty-state">
-              <strong>{records.length === 0 ? "Nothing recorded yet" : "No matches"}</strong>
+              <strong>{records.length === 0 ? "Nothing here yet" : "Nothing matches that"}</strong>
               {records.length === 0
-                ? "Start with your bank balance, then work outwards to loans, policies and investments."
-                : "Try a different search term."}
+                ? "Start with your bank balance. Then add any loans, insurance, property and savings."
+                : "Try searching for something else."}
             </div>
           ) : (
             <div className="table-scroll">
               <table className="ledger-table records-table">
                 <thead>
                   <tr>
-                    <th>Entry</th>
-                    <th>Category</th>
-                    <th>Counterparty</th>
-                    <th className="num">Amount</th>
+                    <th>What it is</th>
+                    <th>Kind</th>
+                    <th>Who it is with</th>
+                    <th className="num">How much</th>
                     <th aria-label="Actions" />
                   </tr>
                 </thead>
@@ -230,14 +229,14 @@ export default function RecordsPage({ records, loadRecords }) {
                         </td>
                         <td>
                           <span className={`badge ${bucket === "liability" ? "critical" : "plain"}`}>
-                            {item.category || "Other"}
+                            {categoryOptions.find((o) => o.value === item.category)?.label || item.category || "Something else"}
                           </span>
                           <div className="muted tiny">counted as {bucketLabel.toLowerCase()}</div>
                         </td>
                         <td className="muted">{item.owner || "—"}</td>
                         <td className="num">
                           {formatCurrency(item.amount)}
-                          {rate !== null ? <div className="muted tiny">{rate}% rate</div> : null}
+                          {rate !== null ? <div className="muted tiny">{rate}% interest</div> : null}
                         </td>
                         <td className="record-actions">
                           {confirmId === item.id ? (
